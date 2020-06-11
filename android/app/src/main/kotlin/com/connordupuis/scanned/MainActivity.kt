@@ -1,0 +1,6 @@
+package com.connordupuis.scanned
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity: FlutterActivity() {
+}
