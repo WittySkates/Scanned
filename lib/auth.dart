@@ -68,10 +68,6 @@ class AuthService {
     }, merge: true);
   }
 
-  Future<String> getCurrentUID() async {
-    return (await _auth.currentUser()).uid;
-  }
-
   void signOut() {
     _auth.signOut();
   }
@@ -99,15 +95,28 @@ class AuthService {
       'country': country,
       'state': state,
       'city': city,
-      'people': {
-        'members': FieldValue.arrayUnion([currentUser.uid]),
-        'owner': FieldValue.arrayUnion([currentUser.uid])
-      },
     }).then((value) {
       _documentID = value.documentID;
       refGroups
           .document(_documentID)
           .setData({'gid': _documentID}, merge: true);
+    }).then((value) {
+      refGroups
+          .document(_documentID)
+          .collection('occupants')
+          .document(currentUser.uid)
+          .setData({
+        'name': currentUser.displayName,
+        'uid': currentUser.uid,
+      }, merge: true);
+      refGroups
+          .document(_documentID)
+          .collection('owner')
+          .document(currentUser.uid)
+          .setData({
+        'name': currentUser.displayName,
+        'uid': currentUser.uid,
+      }, merge: true);
     }).then((value) {
       refUserGroupsJoined.document(_documentID).setData({
         'name': name,
@@ -115,54 +124,35 @@ class AuthService {
         'state': state,
         'city': city,
         'gid': _documentID,
-      });
-    }).then((value) {
-      refUserGroupsOwned.document(_documentID).setData({
-        'name': name,
-        'country': country,
-        'state': state,
-        'city': city,
-        'gid': _documentID,
-      });
+        'owned': true,
+        'admin': false,
+      }, merge: true);
     });
-
     return _documentID;
   }
 
-  Future<String> generateQr() async {
+  Future<String> generateGroupQr() async {
     final FirebaseUser currentUser = await _auth.currentUser();
+  }
+
+  Future<List<DocumentSnapshot>> getUsersGroups() async {
+    final FirebaseUser currentUser = await _auth.currentUser();
+    QuerySnapshot qn = await _db
+        .collection('users')
+        .document(currentUser.uid)
+        .collection('groupsJoined')
+        .getDocuments();
+    return qn.documents;
+  }
+
+  Future<List<DocumentSnapshot>> getGroupMembers(String gid) async {
+    QuerySnapshot qn = await _db
+        .collection('groups')
+        .document(gid)
+        .collection('occupants')
+        .getDocuments();
+    return qn.documents;
   }
 }
 
 final AuthService authService = AuthService();
-
-//Future<String> createGroup(
-//    String name, String country, String state, String city) async {
-//  final FirebaseUser currentUser = await _auth.currentUser();
-//
-//  String _documentID;
-//  DocumentReference refUsers =
-//  _db.collection('users').document(currentUser.uid);
-//
-//  CollectionReference refGroups = _db.collection('groups');
-//  refGroups.add({
-//    'name': name,
-//    'country': country,
-//    'state': state,
-//    'city': city,
-//    'people': {
-//      'members': FieldValue.arrayUnion([currentUser.uid]),
-//      'owner': FieldValue.arrayUnion([currentUser.uid])
-//    },
-//  }).then((value) {
-//    _documentID = value.documentID;
-//    refGroups
-//        .document(_documentID)
-//        .setData({'gid': _documentID}, merge: true);
-//  }).then((value) {
-//    refUsers.setData({
-//      'lastSeen': DateTime.now(),
-//      'groupsJoined': FieldValue.arrayUnion([_documentID]),
-//      'groupsOwned': FieldValue.arrayUnion([_documentID])
-//    }, merge: true);
-//  });

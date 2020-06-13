@@ -8,14 +8,14 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 import '../fintness_app_theme.dart';
 
-class TrainingScreen extends StatefulWidget {
-  const TrainingScreen({Key key, this.animationController}) : super(key: key);
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({Key key, this.animationController}) : super(key: key);
   final AnimationController animationController;
   @override
-  _TrainingScreenState createState() => _TrainingScreenState();
+  _ProfileScreenState createState() => _ProfileScreenState();
 }
 
-class _TrainingScreenState extends State<TrainingScreen>
+class _ProfileScreenState extends State<ProfileScreen>
     with TickerProviderStateMixin {
   Animation<double> topBarAnimation;
 
@@ -59,59 +59,59 @@ class _TrainingScreenState extends State<TrainingScreen>
   void addAllListData() {
     const int count = 6;
 
-    listViews.add(
-      TitleView(
-        titleTxt: 'Your program',
-        subTxt: 'Details',
-        animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-            parent: widget.animationController,
-            curve:
-                Interval((1 / count) * 0, 1.0, curve: Curves.fastOutSlowIn))),
-        animationController: widget.animationController,
-      ),
-    );
-
-    listViews.add(
-      WorkoutView(
-        animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-            parent: widget.animationController,
-            curve:
-                Interval((1 / count) * 2, 1.0, curve: Curves.fastOutSlowIn))),
-        animationController: widget.animationController,
-      ),
-    );
-    listViews.add(
-      RunningView(
-        animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-            parent: widget.animationController,
-            curve:
-                Interval((1 / count) * 3, 1.0, curve: Curves.fastOutSlowIn))),
-        animationController: widget.animationController,
-      ),
-    );
-
-    listViews.add(
-      TitleView(
-        titleTxt: 'Area of focus',
-        subTxt: 'more',
-        animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-            parent: widget.animationController,
-            curve:
-                Interval((1 / count) * 4, 1.0, curve: Curves.fastOutSlowIn))),
-        animationController: widget.animationController,
-      ),
-    );
-
-    listViews.add(
-      AreaListView(
-        mainScreenAnimation: Tween<double>(begin: 0.0, end: 1.0).animate(
-            CurvedAnimation(
-                parent: widget.animationController,
-                curve: Interval((1 / count) * 5, 1.0,
-                    curve: Curves.fastOutSlowIn))),
-        mainScreenAnimationController: widget.animationController,
-      ),
-    );
+//    listViews.add(
+//      TitleView(
+//        titleTxt: 'Your program',
+//        subTxt: 'Details',
+//        animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+//            parent: widget.animationController,
+//            curve:
+//                Interval((1 / count) * 0, 1.0, curve: Curves.fastOutSlowIn))),
+//        animationController: widget.animationController,
+//      ),
+//    );
+//
+//    listViews.add(
+//      WorkoutView(
+//        animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+//            parent: widget.animationController,
+//            curve:
+//                Interval((1 / count) * 2, 1.0, curve: Curves.fastOutSlowIn))),
+//        animationController: widget.animationController,
+//      ),
+//    );
+//    listViews.add(
+//      RunningView(
+//        animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+//            parent: widget.animationController,
+//            curve:
+//                Interval((1 / count) * 3, 1.0, curve: Curves.fastOutSlowIn))),
+//        animationController: widget.animationController,
+//      ),
+//    );
+//
+//    listViews.add(
+//      TitleView(
+//        titleTxt: 'Area of focus',
+//        subTxt: 'more',
+//        animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+//            parent: widget.animationController,
+//            curve:
+//                Interval((1 / count) * 4, 1.0, curve: Curves.fastOutSlowIn))),
+//        animationController: widget.animationController,
+//      ),
+//    );
+//
+//    listViews.add(
+//      AreaListView(
+//        mainScreenAnimation: Tween<double>(begin: 0.0, end: 1.0).animate(
+//            CurvedAnimation(
+//                parent: widget.animationController,
+//                curve: Interval((1 / count) * 5, 1.0,
+//                    curve: Curves.fastOutSlowIn))),
+//        mainScreenAnimationController: widget.animationController,
+//      ),
+//    );
 
     listViews.add(Container(
       child: MaterialButton(
@@ -123,11 +123,6 @@ class _TrainingScreenState extends State<TrainingScreen>
             const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
       ),
       padding: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 50),
-    ));
-    listViews.add(QrImage(
-      data: '1234567',
-      version: QrVersions.auto,
-      size: 200,
     ));
   }
 
