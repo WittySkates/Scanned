@@ -5,24 +5,32 @@ import '../auth.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../fintness_app_theme.dart';
 
-class MembersScreen extends StatefulWidget {
-  const MembersScreen({Key key, this.animationController, this.post})
+class EventsScreen extends StatefulWidget {
+  const EventsScreen({Key key, this.animationController, this.post, this.gid})
       : super(key: key);
   final AnimationController animationController;
 
   final List<DocumentSnapshot> post;
+  final String gid;
 
   @override
-  _MembersScreenState createState() => _MembersScreenState();
+  _EventsScreen createState() => _EventsScreen();
 }
 
-class _MembersScreenState extends State<MembersScreen> {
+class _EventsScreen extends State<EventsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Members'),
+        title: Text('Events'),
         backgroundColor: Colors.indigoAccent,
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () => authService.addEvent(
+                widget.gid, 'Test', DateTime.now(), DateTime.now()),
+          )
+        ],
       ),
       body: ListView.builder(
         padding: EdgeInsets.only(

@@ -4,6 +4,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import '../auth.dart';
 import '../fintness_app_theme.dart';
 import 'package:scanned/groups/members_screen.dart';
+import 'package:scanned/groups/events_screen.dart';
 
 class DetailPage extends StatefulWidget {
   final DocumentSnapshot post;
@@ -20,7 +21,11 @@ class _DetailPage extends State<DetailPage> {
     if (widget.post.data['owned'] == true ||
         widget.post.data['admin'] == true) {
       return FutureBuilder(
-          future: authService.getGroupMembers(widget.post.data['gid']),
+          future: Future.wait([
+            authService.getGroupMembers(widget.post.data['gid']),
+            authService.getGroupEvents(widget.post.data['gid']),
+            authService.getGroupCounts(widget.post.data['gid'])
+          ]),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
@@ -49,19 +54,56 @@ class _DetailPage extends State<DetailPage> {
                       height: 200,
                       child: Card(
                         child: InkWell(
-                          onTap: () => navigateToMembersPage(snapshot.data),
-                          child:
-                              ListTile(title: Center(child: Text('Members'))),
-                        ),
+                            onTap: () =>
+                                navigateToMembersPage(snapshot.data[0]),
+                            child: Container(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Center(
+                                      child: Text('Members'),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Center(
+                                        child: Text(snapshot.data[2]
+                                                ['memberCount']
+                                            .toString())),
+                                  ),
+                                ],
+                              ),
+                            )),
                       ),
                     ),
                     SizedBox(
                       height: 200,
                       child: Card(
                         child: InkWell(
-                          onTap: () {},
-                          child: ListTile(title: Center(child: Text('Events'))),
-                        ),
+                            onTap: () => navigateToEventsPage(
+                                snapshot.data[1], widget.post.data['gid']),
+                            child: Container(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Center(
+                                      child: Text('Events'),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Center(
+                                      child: Text(snapshot.data[2]['eventCount']
+                                          .toString()),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )),
                       ),
                     ),
                   ],
@@ -80,6 +122,16 @@ class _DetailPage extends State<DetailPage> {
         MaterialPageRoute(
             builder: (context) => MembersScreen(
                   post: post,
+                )));
+  }
+
+  navigateToEventsPage(List<DocumentSnapshot> post, String gid) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => EventsScreen(
+                  post: post,
+                  gid: gid,
                 )));
   }
 }

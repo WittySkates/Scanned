@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rxdart/rxdart.dart';
@@ -72,7 +73,7 @@ class AuthService {
     _auth.signOut();
   }
 
-  Future<String> createGroup(
+  void createGroup(
       String name, String country, String state, String city) async {
     final FirebaseUser currentUser = await _auth.currentUser();
 
@@ -83,11 +84,6 @@ class AuthService {
         .document(currentUser.uid)
         .collection('groupsJoined');
 
-    CollectionReference refUserGroupsOwned = _db
-        .collection('users')
-        .document(currentUser.uid)
-        .collection('groupsOwned');
-
     CollectionReference refGroups = _db.collection('groups');
 
     refGroups.add({
@@ -95,6 +91,8 @@ class AuthService {
       'country': country,
       'state': state,
       'city': city,
+      'memberCount': FieldValue.increment(1),
+      'eventCount': 0,
     }).then((value) {
       _documentID = value.documentID;
       refGroups
@@ -128,11 +126,19 @@ class AuthService {
         'admin': false,
       }, merge: true);
     });
-    return _documentID;
   }
 
-  Future<String> generateGroupQr() async {
-    final FirebaseUser currentUser = await _auth.currentUser();
+  void addEvent(String gid, String name, DateTime start, DateTime end) {
+    CollectionReference ref =
+        _db.collection('groups').document(gid).collection('events');
+    DocumentReference refDoc = _db.collection('groups').document(gid);
+    ref.add({
+      'name': name,
+      'start time': start,
+      'end time': end,
+      'gid': gid,
+    });
+    refDoc.setData({'eventCount': FieldValue.increment(1)}, merge: true);
   }
 
   Future<List<DocumentSnapshot>> getUsersGroups() async {
@@ -145,11 +151,25 @@ class AuthService {
     return qn.documents;
   }
 
+  Future<DocumentSnapshot> getGroupCounts(String gid) async {
+    DocumentSnapshot qn = await _db.collection('groups').document(gid).get();
+    return qn;
+  }
+
   Future<List<DocumentSnapshot>> getGroupMembers(String gid) async {
     QuerySnapshot qn = await _db
         .collection('groups')
         .document(gid)
         .collection('occupants')
+        .getDocuments();
+    return qn.documents;
+  }
+
+  Future<List<DocumentSnapshot>> getGroupEvents(String gid) async {
+    QuerySnapshot qn = await _db
+        .collection('groups')
+        .document(gid)
+        .collection('events')
         .getDocuments();
     return qn.documents;
   }
