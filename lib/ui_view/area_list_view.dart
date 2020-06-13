@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../fintness_app_theme.dart';
-import '../auth.dart';
 
 class AreaListView extends StatefulWidget {
   const AreaListView(

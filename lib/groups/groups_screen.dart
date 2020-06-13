@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:scanned/groups/group_detail_view.dart';
+import 'package:scanned/groups/add_group_screen.dart';
 import 'package:flutter/material.dart';
 import '../auth.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import '../fintness_app_theme.dart';
 
 class GroupScreen extends StatefulWidget {
@@ -32,7 +32,12 @@ class _GroupScreenState extends State<GroupScreen> {
     );
   }
 
-  navigateToGroupPage(DocumentSnapshot post) {
+  navigateToAddGroupPage() async {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => AddGroupScreen()));
+  }
+
+  navigateToGroupPage(DocumentSnapshot post) async {
     Navigator.push(
         context,
         MaterialPageRoute(
@@ -42,10 +47,10 @@ class _GroupScreenState extends State<GroupScreen> {
   }
 
   Widget getMainListViewUI() {
-    return FutureBuilder(
-      future: authService.getUsersGroups(),
+    return StreamBuilder(
+      stream: authService.getUsersGroups(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+        if (!snapshot.hasData) {
           return const Center(
             child: CircularProgressIndicator(),
           );
@@ -54,16 +59,17 @@ class _GroupScreenState extends State<GroupScreen> {
             padding: EdgeInsets.only(
               top: 16,
             ),
-            itemCount: snapshot.data.length,
+            itemCount: snapshot.data.documents.length,
             scrollDirection: Axis.vertical,
             itemBuilder: (context, index) {
               widget.animationController.forward();
               return Card(
                 child: InkWell(
-                  onTap: () => navigateToGroupPage(snapshot.data[index]),
+                  onTap: () =>
+                      navigateToGroupPage(snapshot.data.documents[index]),
                   splashColor: Colors.indigo,
-                  child:
-                      ListTile(title: Text(snapshot.data[index].data['name'])),
+                  child: ListTile(
+                      title: Text(snapshot.data.documents[index].data['name'])),
                 ),
               );
             },
@@ -79,10 +85,7 @@ class _GroupScreenState extends State<GroupScreen> {
       backgroundColor: Colors.indigoAccent,
       actions: <Widget>[
         IconButton(
-          icon: Icon(Icons.add),
-          onPressed: () => authService.createGroup(
-              'NHS', 'United States', 'Florida', 'Oldsmar'),
-        )
+            icon: Icon(Icons.add), onPressed: () => navigateToAddGroupPage())
       ],
     );
   }

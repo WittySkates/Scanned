@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'auth.dart';
-
 import 'models/tabIcon_data.dart';
 import 'profile/profile_screen.dart';
-import 'package:flutter/material.dart';
 import 'bottom_navigation_view/bottom_bar_view.dart';
 import 'fintness_app_theme.dart';
 import 'my_diary/my_diary_screen.dart';
@@ -55,10 +52,10 @@ class _FitnessAppHomeScreenState extends State<FitnessAppHomeScreen>
           child: Scaffold(
             backgroundColor: Colors.transparent,
             body: FutureBuilder<bool>(
-              future: getData(),
+              future: authService.initUserData(),
               builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
                 if (!snapshot.hasData) {
-                  return const SizedBox();
+                  return Center(child: CircularProgressIndicator());
                 } else {
                   return Container(
                     child: StreamBuilder(
