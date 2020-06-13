@@ -162,18 +162,6 @@ class AuthService {
     refDoc.setData({'eventCount': FieldValue.increment(1)}, merge: true);
   }
 
-//  Switched to Stream Builder
-//
-//  Future<List<DocumentSnapshot>> getUsersGroups() async {
-//    final FirebaseUser currentUser = await _auth.currentUser();
-//    QuerySnapshot qn = await _db
-//        .collection('users')
-//        .document(currentUser.uid)
-//        .collection('groupsJoined')
-//        .getDocuments();
-//    return qn.documents;
-//  }
-
   Stream<QuerySnapshot> getUsersGroups() {
     Stream<QuerySnapshot> qn;
     qn = _db
@@ -184,25 +172,11 @@ class AuthService {
     return qn;
   }
 
-//  Future<DocumentSnapshot> getGroupCounts(String gid) async {
-//    DocumentSnapshot qn = await _db.collection('groups').document(gid).get();
-//    return qn;
-//  }
-
   Stream<DocumentSnapshot> getGroupCounts(String gid) {
     Stream<DocumentSnapshot> qn;
     qn = _db.collection('groups').document(gid).snapshots();
     return qn;
   }
-
-//  Future<List<DocumentSnapshot>> getGroupMembers(String gid) async {
-//    QuerySnapshot qn = await _db
-//        .collection('groups')
-//        .document(gid)
-//        .collection('occupants')
-//        .getDocuments();
-//    return qn.documents;
-//  }
 
   Stream<QuerySnapshot> getGroupMembers(String gid) {
     Stream<QuerySnapshot> qn;
@@ -213,15 +187,6 @@ class AuthService {
         .snapshots();
     return qn;
   }
-
-//  Future<List<DocumentSnapshot>> getGroupEvents(String gid) async {
-//    QuerySnapshot qn = await _db
-//        .collection('groups')
-//        .document(gid)
-//        .collection('events')
-//        .getDocuments();
-//    return qn.documents;
-//  }
 
   Stream<QuerySnapshot> getGroupEvents(String gid) {
     Stream<QuerySnapshot> qn;
