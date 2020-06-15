@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'auth.dart';
-import 'models/tabIcon_data.dart';
 import 'profile/profile_screen.dart';
-import 'bottom_navigation_view/bottom_bar_view.dart';
 import 'fintness_app_theme.dart';
 import 'my_diary/my_diary_screen.dart';
 import 'groups/groups_screen.dart';
+import 'dart:developer';
+import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
+import 'package:barcode_scan/barcode_scan.dart';
+import 'bottom_navigation_view/bottom_bar.dart';
 
 void main() {
-  runApp(FitnessAppHomeScreen());
+  runApp(new MaterialApp(home: FitnessAppHomeScreen()));
 }
 
 class FitnessAppHomeScreen extends StatefulWidget {
@@ -24,17 +27,61 @@ class _FitnessAppHomeScreenState extends State<FitnessAppHomeScreen>
     color: FintnessAppTheme.background,
   );
 
+  String resultQR;
+  PersistentTabController _controller;
+
+  List<Widget> _buildScreens() {
+    return [
+      GroupScreen(animationController: animationController),
+      MyDiaryScreen(animationController: animationController),
+//      CameraScreen(),
+      ProfileScreen(animationController: animationController),
+      MyDiaryScreen(animationController: animationController),
+    ];
+  }
+
+  List<PersistentBottomNavBarItem> _navBarsItems() {
+    return [
+      PersistentBottomNavBarItem(
+        icon: Icon(Icons.group),
+        title: ("Groups"),
+        activeColor: Colors.indigoAccent,
+        inactiveColor: Colors.grey,
+        isTranslucent: false,
+      ),
+      PersistentBottomNavBarItem(
+        icon: Icon(Icons.event),
+        title: ("Calendar"),
+        activeColor: Colors.indigoAccent,
+        inactiveColor: Colors.grey,
+        isTranslucent: false,
+      ),
+      PersistentBottomNavBarItem(
+        icon: Icon(Icons.assessment),
+        title: ("Activity"),
+        activeColor: Colors.indigoAccent,
+        inactiveColor: Colors.grey,
+        isTranslucent: false,
+      ),
+      PersistentBottomNavBarItem(
+        icon: Icon(Icons.account_circle),
+        title: ("Profile"),
+        activeColor: Colors.indigoAccent,
+        inactiveColor: Colors.grey,
+        isTranslucent: false,
+      ),
+    ];
+  }
+
   @override
   void initState() {
-    tabIconsList.forEach((TabIconData tab) {
-      tab.isSelected = false;
-    });
-    tabIconsList[0].isSelected = true;
+    super.initState();
 
     animationController = AnimationController(
-        duration: const Duration(milliseconds: 600), vsync: this);
-    tabBody = GroupScreen(animationController: animationController);
-    super.initState();
+        duration: const Duration(milliseconds: 500), vsync: this);
+
+    _controller = PersistentTabController(initialIndex: 0);
+    resultQR = 'TESTING';
   }
 
   @override
@@ -43,218 +90,124 @@ class _FitnessAppHomeScreenState extends State<FitnessAppHomeScreen>
     super.dispose();
   }
 
-  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'Scanned',
-        home: Container(
-          color: FintnessAppTheme.background,
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: FutureBuilder<bool>(
-              future: authService.initUserData(),
-              builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                if (!snapshot.hasData) {
-                  return Center(child: CircularProgressIndicator());
+    return FutureBuilder(
+        future: authService.initUserData(),
+        builder: (context, snapshot) {
+          return StreamBuilder(
+              stream: authService.user,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return PersistentTabView(
+                      controller: _controller,
+                      screens: _buildScreens(),
+                      items: _navBarsItems(),
+                      confineInSafeArea: true,
+                      navBarCurve: NavBarCurve.upperCorners,
+                      backgroundColor: Colors.white,
+                      handleAndroidBackButtonPress: true,
+                      onItemSelected: (index) {
+                        setState(() {});
+                      },
+                      customWidget: CustomNavBarWidget(
+                        items: _navBarsItems(),
+                        onItemSelected: (index) {
+                          animationController.reverse().then<dynamic>((data) {
+                            if (!mounted) {
+                              return;
+                            }
+                            setState(() {
+                              _controller.index = index;
+                            });
+                          });
+                        },
+                        selectedIndex: _controller.index,
+                        onButtonTap: () {
+                          scanQR().then((value) {
+                            _showDialog();
+                          });
+                        },
+                      ),
+                      itemCount: 4,
+                      navBarStyle: NavBarStyle.custom);
                 } else {
                   return Container(
-                    child: StreamBuilder(
-                        stream: authService.user,
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            return Stack(
-                              children: <Widget>[tabBody, bottomBar()],
-                            );
-                          } else {
-                            return MaterialButton(
-                              onPressed: () => authService.googleSignIn(),
-                              color: Colors.white,
-                              textColor: Colors.black,
-                              child: Text('Login with Google'),
-                            );
-                          }
-                        }),
+                    child: Center(
+                      child: MaterialButton(
+                        onPressed: () => authService.googleSignIn(),
+                        color: Colors.white,
+                        textColor: Colors.black,
+                        child: Text('Login with Google'),
+                      ),
+                    ),
                   );
                 }
-              },
+              });
+        });
+  }
+
+  Future scanQR() async {
+    try {
+      var result = await BarcodeScanner.scan();
+
+      if (result.type.toString() == 'Cancelled') {
+        setState(() {
+          resultQR = 'cancelled';
+        });
+      } else if (await authService.scannedQR(result.rawContent)) {
+        setState(() {
+          resultQR = 'You Joined Successfully or are Already Part of the Group';
+        });
+      } else {
+        setState(() {
+          resultQR = 'This is not a recognized QR';
+        });
+      }
+    } on PlatformException catch (e) {
+      if (e.code == BarcodeScanner.cameraAccessDenied) {
+        setState(() {
+          resultQR = 'Camera Permission Denied';
+        });
+      } else {
+        setState(() {
+          resultQR = 'Something Went Wrong: $e';
+        });
+      }
+    } on FormatException catch (e) {
+      setState(() {
+        resultQR = 'You pressed the back button before scanning';
+      });
+    } catch (e) {
+      setState(() {
+        resultQR = 'Something Went Wrong: $e';
+      });
+    }
+  }
+
+  void _showDialog() {
+    if (resultQR != 'cancelled') {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: Text(
+              resultQR,
+              textAlign: TextAlign.center,
             ),
-          ),
-        ));
-  }
-
-  Future<bool> getData() async {
-    await Future<dynamic>.delayed(const Duration(milliseconds: 200));
-    return true;
-  }
-
-  Widget bottomBar() {
-    return Column(
-      children: <Widget>[
-        const Expanded(
-          child: SizedBox(),
-        ),
-        BottomBarView(
-          tabIconsList: tabIconsList,
-          addClick: () {},
-          changeIndex: (int index) {
-            if (index == 0) {
-              animationController.reverse().then<dynamic>((data) {
-                if (!mounted) {
-                  return;
-                }
-                setState(() {
-                  tabBody =
-                      GroupScreen(animationController: animationController);
-                });
-              });
-            } else if (index == 1) {
-              animationController.reverse().then<dynamic>((data) {
-                if (!mounted) {
-                  return;
-                }
-                setState(() {
-                  tabBody =
-                      MyDiaryScreen(animationController: animationController);
-                });
-              });
-            } else if (index == 2) {
-              animationController.reverse().then<dynamic>((data) {
-                if (!mounted) {
-                  return;
-                }
-                setState(() {
-                  tabBody =
-                      MyDiaryScreen(animationController: animationController);
-                });
-              });
-            } else if (index == 3) {
-              animationController.reverse().then<dynamic>((data) {
-                if (!mounted) {
-                  return;
-                }
-                setState(() {
-                  tabBody =
-                      ProfileScreen(animationController: animationController);
-                });
-              });
-            }
-          },
-        ),
-      ],
-    );
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Close'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 }
-
-//class MyApp extends StatefulWidget {
-//  @override
-//  _MyAppState createState() => _MyAppState();
-//}
-//
-//class _MyAppState extends State<MyApp> {
-//  @override
-//  Widget build(BuildContext context) {
-//    return MaterialApp(
-//        title: 'FlutterBase',
-//        home: Scaffold(
-//          appBar: AppBar(
-//            title: Text('Flutterbase'),
-//            backgroundColor: Colors.amber,
-//          ),
-//          body: Center(
-//            child: Column(
-//              mainAxisAlignment: MainAxisAlignment.center,
-//              children: <Widget>[
-//                LoginButton(),
-//                UserProfile(),
-//              ],
-//            ),
-//          ),
-//          bottomNavigationBar: BottomAppBar(
-//            shape: const CircularNotchedRectangle(),
-//            child: Container(
-//              height: 50.0,
-//            ),
-//          ),
-//          floatingActionButton: FloatingActionButton(
-//            onPressed: () => authService.createGroup(
-//                'NHS', 'UnitedStates', 'Florida', 'Oldsmar'),
-//            tooltip: 'Create New Group',
-//            child: Icon(Icons.add),
-//          ),
-//          floatingActionButtonLocation:
-//              FloatingActionButtonLocation.centerDocked,
-//        ));
-//  }
-//}
-//
-//class UserProfile extends StatefulWidget {
-//  @override
-//  UserProfileState createState() => UserProfileState();
-//}
-//
-//class UserProfileState extends State<UserProfile> {
-//  Map<String, dynamic> _profile;
-//  bool _loading = false;
-//
-//  @override
-//  initState() {
-//    super.initState();
-//
-//    // Subscriptions are created here
-//    authService.profile.listen((state) => setState(() => _profile = state));
-//
-//    authService.loading.listen((state) => setState(() => _loading = state));
-//  }
-//
-//  @override
-//  Widget build(BuildContext context) {
-//    return Column(children: <Widget>[
-//      Container(padding: EdgeInsets.all(20), child: Text(_profile.toString())),
-//      Text(_loading.toString()),
-//    ]);
-//  }
-//}
-//
-//class LoginButton extends StatelessWidget {
-//  @override
-//  Widget build(BuildContext context) {
-//    return StreamBuilder(
-//        stream: authService.user,
-//        builder: (context, snapshot) {
-//          if (snapshot.hasData) {
-//            return Column(
-//              children: <Widget>[
-//                MaterialButton(
-//                  onPressed: () => authService.signOut(),
-//                  color: Colors.white,
-//                  textColor: Colors.black,
-//                  child: Text('Signout'),
-//                ),
-//                MaterialButton(
-//                  onPressed: () => authService.createGroup(
-//                      'NHS', 'US', 'Florida', 'Clearwater'),
-//                  color: Colors.green,
-//                  textColor: Colors.white,
-//                  child: Text('Create new group'),
-//                ),
-//                QrImage(
-//                  data: '1234567',
-//                  version: QrVersions.auto,
-//                  size: 200,
-//                )
-//              ],
-//            );
-//          } else {
-//            return MaterialButton(
-//              onPressed: () => authService.googleSignIn(),
-//              color: Colors.white,
-//              textColor: Colors.black,
-//              child: Text('Login with Google'),
-//            );
-//          }
-//        });
-//  }
-//}
 
 class HexColor extends Color {
   HexColor(final String hexColor) : super(_getColorFromHex(hexColor));

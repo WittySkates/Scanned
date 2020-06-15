@@ -1,6 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:scanned/auth.dart';
+import '../fintness_app_theme.dart';
 
 class MembersScreen extends StatefulWidget {
   const MembersScreen({Key key, this.animationController, this.gid})
@@ -38,8 +38,30 @@ class _MembersScreenState extends State<MembersScreen> {
                 itemBuilder: (context, index) {
                   return Card(
                     child: ListTile(
-                        title:
-                            Text(snapshot.data.documents[index].data['name'])),
+                      title: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Text(
+                              snapshot.data.documents[index].data['name'],
+                              style: TextStyle(
+                                fontFamily: FintnessAppTheme.fontName,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 1.2,
+                                color: FintnessAppTheme.darkerText,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            snapshot.data.documents[index].data['status'],
+                            style: TextStyle(
+                              fontFamily: FintnessAppTheme.fontName,
+                              letterSpacing: 1.2,
+                              color: Colors.black54,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   );
                 },
               );

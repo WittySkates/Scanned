@@ -1,13 +1,20 @@
+import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:barcode_scan/barcode_scan.dart';
+import 'package:flutter/services.dart';
 
 class AuthService {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final Firestore _db = Firestore.instance;
+
   String currentUserUID;
+  String currentUserName;
+  String currentUserEmail;
+  var resultQR;
 
   Observable<FirebaseUser> user;
   Observable<Map<String, dynamic>> profile;
@@ -31,6 +38,9 @@ class AuthService {
   Future<bool> initUserData() async {
     final FirebaseUser currentUser = await _auth.currentUser();
     currentUserUID = currentUser.uid;
+    currentUserEmail = currentUser.email;
+    currentUserName = currentUser.displayName;
+
     if (currentUserUID != null) {
       return true;
     } else {
@@ -112,14 +122,8 @@ class AuthService {
           .setData({
         'name': currentUser.displayName,
         'uid': currentUser.uid,
-      }, merge: true);
-      refGroups
-          .document(_documentID)
-          .collection('owner')
-          .document(currentUser.uid)
-          .setData({
-        'name': currentUser.displayName,
-        'uid': currentUser.uid,
+        'status': 'owner',
+        'email': currentUser.email,
       }, merge: true);
     }).then((value) {
       refUserGroupsJoined.document(_documentID).setData({
@@ -128,25 +132,88 @@ class AuthService {
         'state': state,
         'city': city,
         'gid': _documentID,
-        'owned': true,
-        'admin': false,
+        'status': 'owner',
       }, merge: true);
     });
     return _documentID;
   }
 
-  void checkForGroupAdd(String gid) async {
-    final FirebaseUser currentUser = await _auth.currentUser();
-    _db
-        .collection('users')
-        .document(currentUser.uid)
-        .collection('groupsJoined')
-        .snapshots()
-        .listen((event) {
-      event.documentChanges.forEach((res) {
-        if (res.type == DocumentChangeType.added) {}
-      });
+//  Future<bool> checkGroupExist(String gid) async {
+//    bool exists = false;
+//    DocumentReference ref = _db.collection('groups').document(gid);
+//    await ref.get().then((snapshot) => {
+//          if (snapshot.exists) {exists = true} else {exists = false}
+//        });
+//    return exists;
+//  }
+
+  Future<bool> scannedQR(String res) async {
+    DocumentSnapshot groupData;
+    String gid;
+    String eid;
+    log(res);
+    for (int i = 0; i < res.length; i++) {
+      if (res[i] == '+') {
+        gid = res.substring(0, i);
+        eid = res.substring(i + 1, res.length);
+        break;
+      } else {
+        gid = res;
+      }
+    }
+
+    await _db.collection('groups').document(gid).get().then((value) {
+      groupData = value;
     });
+
+    DocumentReference refGroup = _db.collection('groups').document(gid);
+
+    DocumentReference refNewMember = _db
+        .collection('groups')
+        .document(gid)
+        .collection('occupants')
+        .document(currentUserUID);
+
+    DocumentReference refCurrentUser = _db
+        .collection('users')
+        .document(currentUserUID)
+        .collection('groupsJoined')
+        .document(gid);
+
+    bool exists = false;
+
+    await refNewMember.get().then((snapshot) {
+      if (!snapshot.exists) {
+        refGroup.setData({
+          'memberCount': FieldValue.increment(1),
+        }, merge: true);
+      }
+    });
+
+    await refGroup.get().then((snapshot) {
+      if (snapshot.exists) {
+        refNewMember.setData({
+          'name': currentUserName,
+          'email': currentUserEmail,
+          'uid': currentUserUID,
+          'status': 'member',
+        }, merge: true);
+
+        refCurrentUser.setData({
+          'name': groupData.data['name'],
+          'country': groupData.data['country'],
+          'state': groupData.data['state'],
+          'city': groupData.data['city'],
+          'gid': groupData.data['gid'],
+          'status': 'member',
+        }, merge: true);
+
+        exists = true;
+      } else {
+        exists = false;
+      }
+    });
+    return exists;
   }
 
   void addEvent(String gid, String name, DateTime start, DateTime end) {
@@ -158,6 +225,10 @@ class AuthService {
       'start time': start,
       'end time': end,
       'gid': gid,
+    }).then((value) {
+      ref.document(value.documentID).setData({
+        'eid': value.documentID,
+      }, merge: true);
     });
     refDoc.setData({'eventCount': FieldValue.increment(1)}, merge: true);
   }
@@ -193,6 +264,34 @@ class AuthService {
     qn =
         _db.collection('groups').document(gid).collection('events').snapshots();
     return qn;
+  }
+
+  Stream<DocumentSnapshot> getGroupEventsDetails(String gid, String eid) {
+    Stream<DocumentSnapshot> qn;
+    qn = _db
+        .collection('groups')
+        .document(gid)
+        .collection('events')
+        .document(eid)
+        .snapshots();
+    return qn;
+  }
+
+  Future scanQR() async {
+    try {
+      var QRresult = await BarcodeScanner.scan();
+      resultQR = QRresult.rawContent;
+    } on PlatformException catch (e) {
+      if (e.code == BarcodeScanner.cameraAccessDenied) {
+        resultQR = 'Camera Permission Denied';
+      } else {
+        resultQR = 'Something Went Wrong: $e';
+      }
+    } on FormatException catch (e) {
+      resultQR = 'You pressed the back button before scanning';
+    } catch (e) {
+      resultQR = 'Something Went Wrong: $e';
+    }
   }
 }
 

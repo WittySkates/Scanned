@@ -6,24 +6,28 @@ import '../fintness_app_theme.dart';
 import 'package:scanned/groups/members_screen.dart';
 import 'package:scanned/groups/events_screen.dart';
 
-class DetailPage extends StatefulWidget {
+class GroupDetailPage extends StatefulWidget {
   final DocumentSnapshot post;
 
-  DetailPage({this.post});
+  GroupDetailPage({this.post});
 
   @override
-  _DetailPage createState() => _DetailPage();
+  _GroupDetailPage createState() => _GroupDetailPage();
 }
 
-class _DetailPage extends State<DetailPage> {
+class _GroupDetailPage extends State<GroupDetailPage> {
+  Widget tabBody = Container(
+    color: FintnessAppTheme.background,
+  );
+
   @override
   Widget build(BuildContext context) {
-    if (widget.post.data['owned'] == true ||
-        widget.post.data['admin'] == true) {
+    if (widget.post.data['status'] == 'owner' ||
+        widget.post.data['status'] == 'admin') {
       return StreamBuilder(
           stream: authService.getGroupCounts(widget.post.data['gid']),
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
+            if (!snapshot.hasData) {
               return Center(
                 child: Container(color: FintnessAppTheme.background),
               );
@@ -46,8 +50,8 @@ class _DetailPage extends State<DetailPage> {
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: 200,
+                    Flexible(
+                      flex: 1,
                       child: Card(
                         child: InkWell(
                             onTap: () =>
@@ -73,8 +77,8 @@ class _DetailPage extends State<DetailPage> {
                             )),
                       ),
                     ),
-                    SizedBox(
-                      height: 200,
+                    Flexible(
+                      flex: 1,
                       child: Card(
                         child: InkWell(
                             onTap: () =>
@@ -101,6 +105,9 @@ class _DetailPage extends State<DetailPage> {
                             )),
                       ),
                     ),
+                    SizedBox(
+                      height: 30,
+                    )
                   ],
                 ),
               );

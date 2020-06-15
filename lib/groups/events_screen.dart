@@ -1,5 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:scanned/groups/event_details_screen.dart';
+import 'package:scanned/groups/add_event_screen.dart';
+
 import '../auth.dart';
 
 class EventsScreen extends StatefulWidget {
@@ -32,9 +34,14 @@ class _EventsScreen extends State<EventsScreen> {
                 scrollDirection: Axis.vertical,
                 itemBuilder: (context, index) {
                   return Card(
-                    child: ListTile(
-                        title:
-                            Text(snapshot.data.documents[index].data['name'])),
+                    child: InkWell(
+                      onTap: () => navigateToEventDetails(widget.gid,
+                          snapshot.data.documents[index].data['eid']),
+                      splashColor: Colors.indigoAccent,
+                      child: ListTile(
+                          title: Text(
+                              snapshot.data.documents[index].data['name'])),
+                    ),
                   );
                 },
               );
@@ -50,20 +57,28 @@ class _EventsScreen extends State<EventsScreen> {
       actions: <Widget>[
         IconButton(
           icon: Icon(Icons.add),
-          onPressed: () {
-            authService.addEvent(
-                widget.gid, 'Test', DateTime.now(), DateTime.now());
-            setState(() {
-              getData();
-            });
-          },
+          onPressed: () => navigateToAddEvent(widget.gid),
         )
       ],
     );
   }
 
-  Future<bool> getData() async {
-    await Future<dynamic>.delayed(const Duration(milliseconds: 50000));
-    return true;
+  navigateToEventDetails(String gid, String eid) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => EventDetailPage(
+                  gid: gid,
+                  eid: eid,
+                )));
+  }
+
+  navigateToAddEvent(String gid) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => AddEventScreen(
+                  gid: gid,
+                )));
   }
 }
