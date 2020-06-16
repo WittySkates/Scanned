@@ -95,7 +95,6 @@ class _GroupScreenState extends State<GroupScreen>
                 child: InkWell(
                   onTap: () => navigateToGroupDetailsPage(
                       snapshot.data.documents[index]),
-                  splashColor: Colors.indigoAccent,
                   child: ListTile(
                       title: Text(snapshot.data.documents[index].data['name'])),
                 ),

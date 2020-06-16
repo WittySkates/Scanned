@@ -37,9 +37,8 @@ dependencies:
   rxdart: 0.22.6 # optional
 
   persistent_bottom_nav_bar: any
-
+  flutter_datetime_picker: any
   barcode_scan: any
-
   qr_flutter: ^3.1.0
 
   # The following adds the Cupertino Icons font to your application.
