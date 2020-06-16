@@ -315,6 +315,25 @@ class AuthService {
     refGroup.delete();
   }
 
+  void leaveGroup(String gid) async {
+    DocumentReference refGroupMembers = _db
+        .collection('groups')
+        .document(gid)
+        .collection('occupants')
+        .document(currentUserUID);
+    DocumentReference refUser = _db
+        .collection('users')
+        .document(currentUserUID)
+        .collection('groupsJoined')
+        .document(gid);
+    DocumentReference refGroup = _db.collection('groups').document(gid);
+
+    refGroup.setData({'memberCount': FieldValue.increment(-1)}, merge: true);
+
+    refGroupMembers.delete();
+    refUser.delete();
+  }
+
   void deleteMember(String gid, String mid) {
     DocumentReference refGroup = _db.collection('groups').document(gid);
     DocumentReference refUserGroup = _db

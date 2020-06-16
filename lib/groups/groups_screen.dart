@@ -190,6 +190,16 @@ class _GroupScreenState extends State<GroupScreen>
                                 }),
                           ),
                         ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.delete,
+                            color: Colors.grey[400],
+                          ),
+                          onPressed: () {
+                            _showDialog1(
+                                snapshot.data.documents[index].data['gid']);
+                          },
+                        )
                       ],
                     ),
                   ),
@@ -315,6 +325,35 @@ class _GroupScreenState extends State<GroupScreen>
                 child: Text('Okay'),
                 onPressed: () {
                   authService.deleteGroup(gid);
+                  Navigator.of(context).pop();
+                }),
+            FlatButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showDialog1(String gid) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          contentPadding: EdgeInsets.fromLTRB(20, 30, 20, 0),
+          content: Text(
+            'Are you sure you want to delete this group',
+            textAlign: TextAlign.center,
+          ),
+          actions: <Widget>[
+            FlatButton(
+                child: Text('Okay'),
+                onPressed: () {
+                  authService.leaveGroup(gid);
                   Navigator.of(context).pop();
                 }),
             FlatButton(
