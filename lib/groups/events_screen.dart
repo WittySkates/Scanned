@@ -89,6 +89,16 @@ class _EventsScreen extends State<EventsScreen> {
                                       .data.documents[index].data['endTime']
                                       .toDate())),
                             ),
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              Icons.delete,
+                              color: Colors.grey[400],
+                            ),
+                            onPressed: () {
+                              _showDialog(widget.gid,
+                                  snapshot.data.documents[index].data['eid']);
+                            },
                           )
                         ],
                       ),
@@ -131,5 +141,35 @@ class _EventsScreen extends State<EventsScreen> {
             builder: (context) => AddEventScreen(
                   gid: gid,
                 )));
+  }
+
+  void _showDialog(String gid, String eid) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          contentPadding: EdgeInsets.fromLTRB(20, 30, 20, 0),
+          content: Text(
+            'Are you sure you want to delete this event',
+            textAlign: TextAlign.center,
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Okay'),
+              onPressed: () {
+                authService.deleteEvent(gid, eid);
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

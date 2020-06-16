@@ -240,13 +240,20 @@ class AuthService {
     return nextEvent;
   }
 
+  Stream<DocumentSnapshot> checkGroupExists(String gid) {
+    Stream<DocumentSnapshot> ref =
+        _db.collection('groups').document(gid).snapshots();
+    return ref;
+  }
+
   void addEvent(String gid, String name, DateTime start, DateTime end) {
     CollectionReference ref =
         _db.collection('groups').document(gid).collection('events');
 
     DocumentReference refDoc = _db.collection('groups').document(gid);
 
-    CollectionReference refMembers = refDoc.collection('occupants');
+    CollectionReference refMembers =
+        _db.collection('groups').document(gid).collection('occupants');
 
     String _eventID;
 
@@ -275,6 +282,54 @@ class AuthService {
       });
     });
     refDoc.setData({'eventCount': FieldValue.increment(1)}, merge: true);
+  }
+
+  void deleteEvent(String gid, String eid) {
+    DocumentReference refGroup = _db.collection('groups').document(gid);
+
+    DocumentReference refEvent = _db
+        .collection('groups')
+        .document(gid)
+        .collection('events')
+        .document(eid);
+
+    refEvent.delete();
+    refGroup.setData({'eventCount': FieldValue.increment(-1)}, merge: true);
+  }
+
+  void deleteGroup(String gid) async {
+    DocumentReference refGroup = _db.collection('groups').document(gid);
+    CollectionReference refMembers =
+        _db.collection('groups').document(gid).collection('occupants');
+
+    await refMembers.getDocuments().then((res) {
+      res.documents.forEach((user) {
+        _db
+            .collection('users')
+            .document(user.data['uid'])
+            .collection('groupsJoined')
+            .document(gid)
+            .delete();
+      });
+    });
+    refGroup.delete();
+  }
+
+  void deleteMember(String gid, String mid) {
+    DocumentReference refGroup = _db.collection('groups').document(gid);
+    DocumentReference refUserGroup = _db
+        .collection('users')
+        .document(mid)
+        .collection('groupsJoined')
+        .document(gid);
+    DocumentReference refMember = _db
+        .collection('groups')
+        .document(gid)
+        .collection('occupants')
+        .document(mid);
+    refMember.delete();
+    refUserGroup.delete();
+    refGroup.setData({'memberCount': FieldValue.increment(-1)}, merge: true);
   }
 
   Stream<QuerySnapshot> getUsersGroups() {

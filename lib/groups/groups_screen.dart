@@ -92,49 +92,109 @@ class _GroupScreenState extends State<GroupScreen>
             itemCount: snapshot.data.documents.length,
             scrollDirection: Axis.vertical,
             itemBuilder: (context, index) {
-              return Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                child: InkWell(
-                  onTap: () => navigateToGroupDetailsPage(
-                      snapshot.data.documents[index]),
-                  child: Column(
-                    children: <Widget>[
-                      ListTile(
-                        title: Text(
-                          snapshot.data.documents[index].data['name'],
-                        ),
-                        subtitle: FutureBuilder(
-                            future: authService.getNextEvent(
-                                snapshot.data.documents[index].data['gid']),
-                            builder: (context, snapshot1) {
-                              if (!snapshot1.hasData) {
-                                return SizedBox();
-                              }
-                              if (snapshot1.data == DateTime(9999)) {
-                                return Row(children: <Widget>[
-                                  Expanded(
-                                    child: Text('Next Event: '),
-                                  ),
-                                  Text('No Upcoming Events'),
-                                ]);
-                              }
-                              return Row(children: <Widget>[
-                                Expanded(
-                                  child: Text('Next Event: '),
-                                ),
-                                Text(
-                                  DateFormat('EE, MMMM d, yyyy')
-                                      .format(snapshot1.data),
-                                ),
-                              ]);
-                            }),
-                      ),
-                    ],
+              if (snapshot.data.documents[index].data['status'] == 'owner') {
+                return Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
                   ),
-                ),
-              );
+                  child: InkWell(
+                    onTap: () => navigateToGroupDetailsPage(
+                        snapshot.data.documents[index]),
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: ListTile(
+                            title: Text(
+                              snapshot.data.documents[index].data['name'],
+                            ),
+                            subtitle: FutureBuilder(
+                                future: authService.getNextEvent(
+                                    snapshot.data.documents[index].data['gid']),
+                                builder: (context, snapshot1) {
+                                  if (!snapshot1.hasData) {
+                                    return SizedBox();
+                                  }
+                                  if (snapshot1.data == DateTime(9999)) {
+                                    return Row(children: <Widget>[
+                                      Expanded(
+                                        child: Text('Next Event: '),
+                                      ),
+                                      Text('No Upcoming Events'),
+                                    ]);
+                                  }
+                                  return Row(children: <Widget>[
+                                    Expanded(
+                                      child: Text('Next Event: '),
+                                    ),
+                                    Text(
+                                      DateFormat('EE, MMMM d, yyyy')
+                                          .format(snapshot1.data),
+                                    ),
+                                  ]);
+                                }),
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.delete,
+                            color: Colors.grey[400],
+                          ),
+                          onPressed: () {
+                            _showDialog(
+                                snapshot.data.documents[index].data['gid']);
+                          },
+                        )
+                      ],
+                    ),
+                  ),
+                );
+              } else {
+                return Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: InkWell(
+                    onTap: () => navigateToGroupDetailsPage(
+                        snapshot.data.documents[index]),
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: ListTile(
+                            title: Text(
+                              snapshot.data.documents[index].data['name'],
+                            ),
+                            subtitle: FutureBuilder(
+                                future: authService.getNextEvent(
+                                    snapshot.data.documents[index].data['gid']),
+                                builder: (context, snapshot1) {
+                                  if (!snapshot1.hasData) {
+                                    return SizedBox();
+                                  }
+                                  if (snapshot1.data == DateTime(9999)) {
+                                    return Row(children: <Widget>[
+                                      Expanded(
+                                        child: Text('Next Event: '),
+                                      ),
+                                      Text('No Upcoming Events'),
+                                    ]);
+                                  }
+                                  return Row(children: <Widget>[
+                                    Expanded(
+                                      child: Text('Next Event: '),
+                                    ),
+                                    Text(
+                                      DateFormat('EE, MMMM d, yyyy')
+                                          .format(snapshot1.data),
+                                    ),
+                                  ]);
+                                }),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
             },
           );
         }
@@ -238,5 +298,34 @@ class _GroupScreenState extends State<GroupScreen>
             builder: (context) => GroupDetailPage(
                   post: post,
                 )));
+  }
+
+  void _showDialog(String gid) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          contentPadding: EdgeInsets.fromLTRB(20, 30, 20, 0),
+          content: Text(
+            'Are you sure you want to delete this group',
+            textAlign: TextAlign.center,
+          ),
+          actions: <Widget>[
+            FlatButton(
+                child: Text('Okay'),
+                onPressed: () {
+                  authService.deleteGroup(gid);
+                  Navigator.of(context).pop();
+                }),
+            FlatButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

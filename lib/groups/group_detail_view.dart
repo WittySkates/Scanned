@@ -5,6 +5,7 @@ import '../auth.dart';
 import '../app_theme.dart';
 import 'package:scanned/groups/members_screen.dart';
 import 'package:scanned/groups/events_screen.dart';
+import 'package:scanned/groups/groups_screen.dart';
 
 class GroupDetailPage extends StatefulWidget {
   final DocumentSnapshot post;

@@ -96,9 +96,9 @@ class _AddEventScreen extends State<AddEventScreen> {
                     DatePicker.showDateTimePicker(
                       context,
                       showTitleActions: true,
-                      minTime: DateTime(2015),
+                      minTime: DateTime.now(),
                       maxTime: DateTime(9999),
-                      onConfirm: (date) {
+                      onChanged: (date) {
                         setState(() {
                           startTime = date;
                           startTimeDateShown =
@@ -106,7 +106,19 @@ class _AddEventScreen extends State<AddEventScreen> {
                           startTimeShown = DateFormat('h:mm a').format(date);
                         });
                       },
-                      currentTime: DateTime.now(),
+                      onConfirm: (date) {
+                        setState(() {
+                          startTime = date;
+                          startTimeDateShown =
+                              DateFormat('EE, MMMM d, yyyy').format(date);
+                          startTimeShown = DateFormat('h:mm a').format(date);
+
+                          endTime = date.add(Duration(minutes: 1));
+                          endTimeDateShown =
+                              DateFormat('EE, MMMM d, yyyy').format(endTime);
+                          endTimeShown = DateFormat('h:mm a').format(endTime);
+                        });
+                      },
                     );
                   },
                   child: ListTile(
@@ -132,8 +144,16 @@ class _AddEventScreen extends State<AddEventScreen> {
                     DatePicker.showDateTimePicker(
                       context,
                       showTitleActions: true,
-                      minTime: DateTime(2015),
+                      minTime: startTime.add(Duration(minutes: 1)),
                       maxTime: DateTime(9999),
+                      onChanged: (date) {
+                        setState(() {
+                          endTime = date;
+                          endTimeDateShown =
+                              DateFormat('EE, MMMM d, yyyy').format(date);
+                          endTimeShown = DateFormat('h:mm a').format(date);
+                        });
+                      },
                       onConfirm: (date) {
                         setState(() {
                           endTime = date;
@@ -142,7 +162,6 @@ class _AddEventScreen extends State<AddEventScreen> {
                           endTimeShown = DateFormat('h:mm a').format(date);
                         });
                       },
-                      currentTime: DateTime.now(),
                     );
                   },
                   child: ListTile(

@@ -36,40 +36,120 @@ class _MembersScreenState extends State<MembersScreen> {
                 itemCount: snapshot.data.documents.length,
                 scrollDirection: Axis.vertical,
                 itemBuilder: (context, index) {
-                  return Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: ListTile(
-                      title: Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: Text(
-                              snapshot.data.documents[index].data['name'],
-                              style: TextStyle(
-                                fontFamily: AppTheme.fontName,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 1.2,
-                                color: AppTheme.darkerText,
+                  if (snapshot.data.documents[index].data['status'] !=
+                      'owner') {
+                    return Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: ListTile(
+                        title: Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: Text(
+                                snapshot.data.documents[index].data['name'],
+                                style: TextStyle(
+                                  fontFamily: AppTheme.fontName,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 1.2,
+                                  color: AppTheme.darkerText,
+                                ),
                               ),
                             ),
-                          ),
-                          Text(
-                            snapshot.data.documents[index].data['status'],
-                            style: TextStyle(
-                              fontFamily: AppTheme.fontName,
-                              letterSpacing: 1.2,
-                              color: Colors.black54,
+                            Padding(
+                              padding: const EdgeInsets.only(right: 5),
+                              child: Text(
+                                snapshot.data.documents[index].data['status'],
+                                style: TextStyle(
+                                  fontFamily: AppTheme.fontName,
+                                  letterSpacing: 1.2,
+                                  color: Colors.black54,
+                                ),
+                              ),
                             ),
-                          ),
-                        ],
+                            IconButton(
+                              icon: Icon(
+                                Icons.delete,
+                                color: Colors.grey[400],
+                              ),
+                              onPressed: () {
+                                _showDialog(widget.gid,
+                                    snapshot.data.documents[index].data['uid']);
+                              },
+                            )
+                          ],
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  } else {
+                    return Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: ListTile(
+                        title: Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: Text(
+                                snapshot.data.documents[index].data['name'],
+                                style: TextStyle(
+                                  fontFamily: AppTheme.fontName,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 1.2,
+                                  color: AppTheme.darkerText,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 0),
+                              child: Text(
+                                snapshot.data.documents[index].data['status'],
+                                style: TextStyle(
+                                  fontFamily: AppTheme.fontName,
+                                  letterSpacing: 1.2,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
                 },
               );
             }
           }),
+    );
+  }
+
+  void _showDialog(String gid, String mid) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          contentPadding: EdgeInsets.fromLTRB(20, 30, 20, 0),
+          content: Text(
+            'Are you sure you want to delete this member',
+            textAlign: TextAlign.center,
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Okay'),
+              onPressed: () {
+                authService.deleteMember(gid, mid);
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
