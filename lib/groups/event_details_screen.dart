@@ -17,7 +17,7 @@ class _EventDetailPage extends State<EventDetailPage> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-        stream: authService.getGroupEventsDetails(widget.gid, widget.eid),
+        stream: authService.getGroupEventDetails(widget.gid, widget.eid),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Center(
@@ -36,20 +36,82 @@ class _EventDetailPage extends State<EventDetailPage> {
                   )
                 ],
               ),
-              body: Column(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(80.0),
-                    child: Center(
-                      child: QrImage(
-                        data: widget.gid + '+' + widget.eid,
-                        version: QrVersions.auto,
-                        size: 200,
-                      ),
+              body: Column(children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(80.0),
+                  child: Center(
+                    child: QrImage(
+                      data: widget.gid + '+' + widget.eid,
+                      version: QrVersions.auto,
+                      size: 200,
                     ),
                   ),
-                ],
-              ),
+                ),
+                Expanded(
+                  child: StreamBuilder(
+                      stream: authService.getGroupEventAttendees(
+                          widget.gid, widget.eid),
+                      builder: (context, snapshot1) {
+                        if (!snapshot1.hasData) {
+                          return Center(child: CircularProgressIndicator());
+                        }
+                        return ListView.builder(
+                          itemCount: snapshot1.data.documents.length,
+                          scrollDirection: Axis.vertical,
+                          itemBuilder: (context, index) {
+                            if (snapshot1
+                                .data.documents[index].data['attended']) {
+                              return Card(
+                                color: Colors.indigoAccent,
+                                child: ListTile(
+                                  title: Row(
+                                    children: <Widget>[
+                                      Expanded(
+                                        child: Text(
+                                          snapshot1.data.documents[index]
+                                              .data['name'],
+                                          style: TextStyle(
+                                            fontFamily:
+                                                FintnessAppTheme.fontName,
+                                            fontWeight: FontWeight.w700,
+                                            letterSpacing: 1.2,
+                                            color: FintnessAppTheme.darkerText,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            } else {
+                              return Card(
+                                color: Colors.grey,
+                                child: ListTile(
+                                  title: Row(
+                                    children: <Widget>[
+                                      Expanded(
+                                        child: Text(
+                                          snapshot1.data.documents[index]
+                                              .data['name'],
+                                          style: TextStyle(
+                                            fontFamily:
+                                                FintnessAppTheme.fontName,
+                                            fontWeight: FontWeight.w700,
+                                            letterSpacing: 1.2,
+                                            color: FintnessAppTheme.darkerText,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                        );
+                      }),
+                ),
+              ]),
             );
           }
         });

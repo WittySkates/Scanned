@@ -291,13 +291,25 @@ class AuthService {
     return qn;
   }
 
-  Stream<DocumentSnapshot> getGroupEventsDetails(String gid, String eid) {
+  Stream<DocumentSnapshot> getGroupEventDetails(String gid, String eid) {
     Stream<DocumentSnapshot> qn;
     qn = _db
         .collection('groups')
         .document(gid)
         .collection('events')
         .document(eid)
+        .snapshots();
+    return qn;
+  }
+
+  Stream<QuerySnapshot> getGroupEventAttendees(String gid, String eid) {
+    Stream<QuerySnapshot> qn;
+    qn = _db
+        .collection('groups')
+        .document(gid)
+        .collection('events')
+        .document(eid)
+        .collection('attendees')
         .snapshots();
     return qn;
   }
