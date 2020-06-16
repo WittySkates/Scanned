@@ -45,28 +45,31 @@ class _EventsScreen extends State<EventsScreen> {
                       splashColor: Colors.indigoAccent,
                       child: Row(
                         children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(15, 20, 15, 20),
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    DateFormat('MMM').format(snapshot
-                                        .data.documents[index].data['startTime']
-                                        .toDate()),
-                                    style: TextStyle(fontSize: 20),
-                                  ),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(5, 2, 0, 0),
-                                    child: Text(
-                                      DateFormat('d').format(snapshot.data
+                          Container(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.fromLTRB(15, 20, 15, 20),
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    Text(
+                                      DateFormat('MMM').format(snapshot.data
                                           .documents[index].data['startTime']
                                           .toDate()),
                                       style: TextStyle(fontSize: 20),
                                     ),
-                                  ),
-                                ]),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.fromLTRB(0, 2, 0, 0),
+                                      child: Text(
+                                        DateFormat('d').format(snapshot.data
+                                            .documents[index].data['startTime']
+                                            .toDate()),
+                                        style: TextStyle(fontSize: 20),
+                                      ),
+                                    ),
+                                  ]),
+                            ),
                           ),
                           Expanded(
                             child: ListTile(
