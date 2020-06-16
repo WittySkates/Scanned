@@ -105,3 +105,55 @@
 //tabIconsList[0].isSelected = true;
 //
 //tabBody = GroupScreen(animationController: animationController);
+
+//Create Group Old Structure
+//Future<String> createGroup(
+//    String name, String country, String state, String city) async {
+//  final FirebaseUser currentUser = await _auth.currentUser();
+//
+//  String _documentID;
+//
+//  CollectionReference refUserGroupsJoined = _db
+//      .collection('users')
+//      .document(currentUser.uid)
+//      .collection('groupsJoined');
+//
+//  CollectionReference refGroups = _db.collection('groups');
+//  DocumentReference refCurUser =
+//  _db.collection('users').document(currentUserUID);
+//
+//  refGroups.add({
+//    'name': name,
+//    'country': country,
+//    'state': state,
+//    'city': city,
+//    'memberCount': FieldValue.increment(1),
+//    'eventCount': 0,
+//  }).then((value) {
+//    _documentID = value.documentID;
+//    refGroups
+//        .document(_documentID)
+//        .setData({'gid': _documentID}, merge: true);
+//  }).then((value) {
+//    refGroups
+//        .document(_documentID)
+//        .collection('occupants')
+//        .document(currentUser.uid)
+//        .setData({
+//      'name': currentUser.displayName,
+//      'uid': currentUser.uid,
+//      'status': 'owner',
+//      'email': currentUser.email,
+//    }, merge: true);
+//  }).then((value) {
+//    refUserGroupsJoined.document(_documentID).setData({
+//      'name': name,
+//      'country': country,
+//      'state': state,
+//      'city': city,
+//      'gid': _documentID,
+//      'status': 'owner',
+//    }, merge: true);
+//  });
+//  return _documentID;
+//}

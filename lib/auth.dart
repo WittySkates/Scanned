@@ -101,8 +101,6 @@ class AuthService {
         .collection('groupsJoined');
 
     CollectionReference refGroups = _db.collection('groups');
-    DocumentReference refCurUser =
-        _db.collection('users').document(currentUserUID);
 
     refGroups.add({
       'name': name,
@@ -140,20 +138,10 @@ class AuthService {
     return _documentID;
   }
 
-//  Future<bool> checkGroupExist(String gid) async {
-//    bool exists = false;
-//    DocumentReference ref = _db.collection('groups').document(gid);
-//    await ref.get().then((snapshot) => {
-//          if (snapshot.exists) {exists = true} else {exists = false}
-//        });
-//    return exists;
-//  }
-
   Future<bool> scannedQR(String res) async {
     DocumentSnapshot groupData;
     String gid;
     String eid;
-    log(res);
     for (int i = 0; i < res.length; i++) {
       if (res[i] == '+') {
         gid = res.substring(0, i);
@@ -176,7 +164,7 @@ class AuthService {
         .collection('occupants')
         .document(currentUserUID);
 
-    DocumentReference refCurrentUser = _db
+    DocumentReference refCurrentUserJoined = _db
         .collection('users')
         .document(currentUserUID)
         .collection('groupsJoined')
@@ -201,7 +189,7 @@ class AuthService {
           'status': 'member',
         }, merge: true);
 
-        refCurrentUser.setData({
+        refCurrentUserJoined.setData({
           'name': groupData.data['name'],
           'country': groupData.data['country'],
           'state': groupData.data['state'],
@@ -215,22 +203,57 @@ class AuthService {
         exists = false;
       }
     });
+
+    if (eid != null) {
+      await refGroup.collection('events').document(eid).get().then((snapshot) {
+        if (snapshot.exists) {
+          refGroup
+              .collection('events')
+              .document(eid)
+              .collection('attendees')
+              .document(currentUserUID)
+              .setData({'name': currentUserName, 'attended': true},
+                  merge: true);
+        }
+      });
+    }
+
     return exists;
   }
 
   void addEvent(String gid, String name, DateTime start, DateTime end) {
     CollectionReference ref =
         _db.collection('groups').document(gid).collection('events');
+
     DocumentReference refDoc = _db.collection('groups').document(gid);
+
+    CollectionReference refMembers = refDoc.collection('occupants');
+
+    String _eventID;
+
     ref.add({
       'name': name,
       'start time': start,
       'end time': end,
       'gid': gid,
     }).then((value) {
+      _eventID = value.documentID;
       ref.document(value.documentID).setData({
-        'eid': value.documentID,
+        'eid': _eventID,
       }, merge: true);
+    }).then((value) async {
+      await refMembers.getDocuments().then((res) {
+        res.documents.forEach((user) {
+          ref
+              .document(_eventID)
+              .collection('attendees')
+              .document(user.data['uid'])
+              .setData({
+            'name': user.data['name'],
+            'attended': false,
+          }, merge: true);
+        });
+      });
     });
     refDoc.setData({'eventCount': FieldValue.increment(1)}, merge: true);
   }
