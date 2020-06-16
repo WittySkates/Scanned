@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'auth.dart';
 import 'profile/profile_screen.dart';
-import 'fintness_app_theme.dart';
+import 'app_theme.dart';
 import 'my_diary/my_diary_screen.dart';
 import 'groups/groups_screen.dart';
 import 'dart:developer';
@@ -24,7 +24,7 @@ class _FitnessAppHomeScreenState extends State<FitnessAppHomeScreen>
   AnimationController animationController;
 
   Widget tabBody = Container(
-    color: FintnessAppTheme.background,
+    color: AppTheme.background,
   );
 
   String resultQR;

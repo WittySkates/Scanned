@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:scanned/groups/event_details_screen.dart';
 import 'package:scanned/groups/add_event_screen.dart';
+import 'package:intl/intl.dart';
+import '../app_theme.dart';
 
 import '../auth.dart';
 
@@ -34,13 +36,59 @@ class _EventsScreen extends State<EventsScreen> {
                 scrollDirection: Axis.vertical,
                 itemBuilder: (context, index) {
                   return Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
                     child: InkWell(
                       onTap: () => navigateToEventDetails(widget.gid,
                           snapshot.data.documents[index].data['eid']),
                       splashColor: Colors.indigoAccent,
-                      child: ListTile(
-                          title: Text(
-                              snapshot.data.documents[index].data['name'])),
+                      child: Row(
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(15, 20, 15, 20),
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    DateFormat('MMM').format(snapshot
+                                        .data.documents[index].data['startTime']
+                                        .toDate()),
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(5, 2, 0, 0),
+                                    child: Text(
+                                      DateFormat('d').format(snapshot.data
+                                          .documents[index].data['startTime']
+                                          .toDate()),
+                                      style: TextStyle(fontSize: 20),
+                                    ),
+                                  ),
+                                ]),
+                          ),
+                          Expanded(
+                            child: ListTile(
+                              title: Text(
+                                snapshot.data.documents[index].data['name'],
+                                style: TextStyle(
+                                    fontFamily: AppTheme.fontName,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 1.2,
+                                    color: AppTheme.darkerText),
+                              ),
+                              subtitle: Text(DateFormat('h:m a').format(snapshot
+                                      .data.documents[index].data['startTime']
+                                      .toDate()) +
+                                  ' - ' +
+                                  DateFormat('h:m a').format(snapshot
+                                      .data.documents[index].data['endTime']
+                                      .toDate())),
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   );
                 },

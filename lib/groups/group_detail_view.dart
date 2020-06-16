@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../auth.dart';
-import '../fintness_app_theme.dart';
+import '../app_theme.dart';
 import 'package:scanned/groups/members_screen.dart';
 import 'package:scanned/groups/events_screen.dart';
 
@@ -17,7 +17,7 @@ class GroupDetailPage extends StatefulWidget {
 
 class _GroupDetailPage extends State<GroupDetailPage> {
   Widget tabBody = Container(
-    color: FintnessAppTheme.background,
+    color: AppTheme.background,
   );
 
   @override
@@ -27,13 +27,13 @@ class _GroupDetailPage extends State<GroupDetailPage> {
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Center(
-              child: Container(color: FintnessAppTheme.background),
+              child: Container(color: AppTheme.background),
             );
           } else {
             if (widget.post.data['status'] == 'owner' ||
                 widget.post.data['status'] == 'admin') {
               return Scaffold(
-                backgroundColor: FintnessAppTheme.background,
+                backgroundColor: AppTheme.background,
                 appBar: AppBar(
                   backgroundColor: Colors.indigoAccent,
                   title: Text(widget.post.data['name']),
@@ -80,6 +80,9 @@ class _GroupDetailPage extends State<GroupDetailPage> {
                     Flexible(
                       flex: 1,
                       child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
                         child: InkWell(
                             onTap: () =>
                                 navigateToEventsPage(widget.post.data['gid']),

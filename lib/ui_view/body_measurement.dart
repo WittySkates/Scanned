@@ -1,4 +1,4 @@
-import 'package:scanned/fintness_app_theme.dart';
+import 'package:scanned/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class BodyMeasurementView extends StatelessWidget {
@@ -23,7 +23,7 @@ class BodyMeasurementView extends StatelessWidget {
                   left: 24, right: 24, top: 16, bottom: 18),
               child: Container(
                 decoration: BoxDecoration(
-                  color: FintnessAppTheme.white,
+                  color: AppTheme.white,
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(8.0),
                       bottomLeft: Radius.circular(8.0),
@@ -31,7 +31,7 @@ class BodyMeasurementView extends StatelessWidget {
                       topRight: Radius.circular(68.0)),
                   boxShadow: <BoxShadow>[
                     BoxShadow(
-                        color: FintnessAppTheme.grey.withOpacity(0.2),
+                        color: AppTheme.grey.withOpacity(0.2),
                         offset: Offset(1.1, 1.1),
                         blurRadius: 10.0),
                   ],
@@ -52,11 +52,11 @@ class BodyMeasurementView extends StatelessWidget {
                               'Weight',
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                  fontFamily: FintnessAppTheme.fontName,
+                                  fontFamily: AppTheme.fontName,
                                   fontWeight: FontWeight.w500,
                                   fontSize: 16,
                                   letterSpacing: -0.1,
-                                  color: FintnessAppTheme.darkText),
+                                  color: AppTheme.darkText),
                             ),
                           ),
                           Row(
@@ -74,10 +74,10 @@ class BodyMeasurementView extends StatelessWidget {
                                       '206.8',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
-                                        fontFamily: FintnessAppTheme.fontName,
+                                        fontFamily: AppTheme.fontName,
                                         fontWeight: FontWeight.w600,
                                         fontSize: 32,
-                                        color: FintnessAppTheme.nearlyDarkBlue,
+                                        color: AppTheme.nearlyDarkBlue,
                                       ),
                                     ),
                                   ),
@@ -88,11 +88,11 @@ class BodyMeasurementView extends StatelessWidget {
                                       'Ibs',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
-                                        fontFamily: FintnessAppTheme.fontName,
+                                        fontFamily: AppTheme.fontName,
                                         fontWeight: FontWeight.w500,
                                         fontSize: 18,
                                         letterSpacing: -0.2,
-                                        color: FintnessAppTheme.nearlyDarkBlue,
+                                        color: AppTheme.nearlyDarkBlue,
                                       ),
                                     ),
                                   ),
@@ -107,8 +107,7 @@ class BodyMeasurementView extends StatelessWidget {
                                     children: <Widget>[
                                       Icon(
                                         Icons.access_time,
-                                        color: FintnessAppTheme.grey
-                                            .withOpacity(0.5),
+                                        color: AppTheme.grey.withOpacity(0.5),
                                         size: 16,
                                       ),
                                       Padding(
@@ -118,13 +117,12 @@ class BodyMeasurementView extends StatelessWidget {
                                           'Today 8:26 AM',
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
-                                            fontFamily:
-                                                FintnessAppTheme.fontName,
+                                            fontFamily: AppTheme.fontName,
                                             fontWeight: FontWeight.w500,
                                             fontSize: 14,
                                             letterSpacing: 0.0,
-                                            color: FintnessAppTheme.grey
-                                                .withOpacity(0.5),
+                                            color:
+                                                AppTheme.grey.withOpacity(0.5),
                                           ),
                                         ),
                                       ),
@@ -137,11 +135,11 @@ class BodyMeasurementView extends StatelessWidget {
                                       'InBody SmartScale',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
-                                        fontFamily: FintnessAppTheme.fontName,
+                                        fontFamily: AppTheme.fontName,
                                         fontWeight: FontWeight.w500,
                                         fontSize: 12,
                                         letterSpacing: 0.0,
-                                        color: FintnessAppTheme.nearlyDarkBlue,
+                                        color: AppTheme.nearlyDarkBlue,
                                       ),
                                     ),
                                   ),
@@ -158,7 +156,7 @@ class BodyMeasurementView extends StatelessWidget {
                       child: Container(
                         height: 2,
                         decoration: BoxDecoration(
-                          color: FintnessAppTheme.background,
+                          color: AppTheme.background,
                           borderRadius: BorderRadius.all(Radius.circular(4.0)),
                         ),
                       ),
@@ -177,11 +175,11 @@ class BodyMeasurementView extends StatelessWidget {
                                   '185 cm',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                    fontFamily: FintnessAppTheme.fontName,
+                                    fontFamily: AppTheme.fontName,
                                     fontWeight: FontWeight.w500,
                                     fontSize: 16,
                                     letterSpacing: -0.2,
-                                    color: FintnessAppTheme.darkText,
+                                    color: AppTheme.darkText,
                                   ),
                                 ),
                                 Padding(
@@ -190,11 +188,10 @@ class BodyMeasurementView extends StatelessWidget {
                                     'Height',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                      fontFamily: FintnessAppTheme.fontName,
+                                      fontFamily: AppTheme.fontName,
                                       fontWeight: FontWeight.w600,
                                       fontSize: 12,
-                                      color: FintnessAppTheme.grey
-                                          .withOpacity(0.5),
+                                      color: AppTheme.grey.withOpacity(0.5),
                                     ),
                                   ),
                                 ),
@@ -214,11 +211,11 @@ class BodyMeasurementView extends StatelessWidget {
                                       '27.3 BMI',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
-                                        fontFamily: FintnessAppTheme.fontName,
+                                        fontFamily: AppTheme.fontName,
                                         fontWeight: FontWeight.w500,
                                         fontSize: 16,
                                         letterSpacing: -0.2,
-                                        color: FintnessAppTheme.darkText,
+                                        color: AppTheme.darkText,
                                       ),
                                     ),
                                     Padding(
@@ -227,11 +224,10 @@ class BodyMeasurementView extends StatelessWidget {
                                         'Overweight',
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
-                                          fontFamily: FintnessAppTheme.fontName,
+                                          fontFamily: AppTheme.fontName,
                                           fontWeight: FontWeight.w600,
                                           fontSize: 12,
-                                          color: FintnessAppTheme.grey
-                                              .withOpacity(0.5),
+                                          color: AppTheme.grey.withOpacity(0.5),
                                         ),
                                       ),
                                     ),
@@ -252,11 +248,11 @@ class BodyMeasurementView extends StatelessWidget {
                                     Text(
                                       '20%',
                                       style: TextStyle(
-                                        fontFamily: FintnessAppTheme.fontName,
+                                        fontFamily: AppTheme.fontName,
                                         fontWeight: FontWeight.w500,
                                         fontSize: 16,
                                         letterSpacing: -0.2,
-                                        color: FintnessAppTheme.darkText,
+                                        color: AppTheme.darkText,
                                       ),
                                     ),
                                     Padding(
@@ -265,11 +261,10 @@ class BodyMeasurementView extends StatelessWidget {
                                         'Body fat',
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
-                                          fontFamily: FintnessAppTheme.fontName,
+                                          fontFamily: AppTheme.fontName,
                                           fontWeight: FontWeight.w600,
                                           fontSize: 12,
-                                          color: FintnessAppTheme.grey
-                                              .withOpacity(0.5),
+                                          color: AppTheme.grey.withOpacity(0.5),
                                         ),
                                       ),
                                     ),

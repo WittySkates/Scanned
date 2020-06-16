@@ -1,5 +1,5 @@
 import 'dart:math' as math;
-import 'package:scanned/fintness_app_theme.dart';
+import 'package:scanned/app_theme.dart';
 import 'package:scanned/models/tabIcon_data.dart';
 import 'package:scanned/main.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +44,7 @@ class _BottomBarViewState extends State<BottomBarView>
             return Transform(
               transform: Matrix4.translationValues(0.0, 0.0, 0.0),
               child: PhysicalShape(
-                color: FintnessAppTheme.white,
+                color: AppTheme.white,
                 elevation: 16.0,
                 clipper: TabClipper(
                     radius: Tween<double>(begin: 0.0, end: 1.0)
@@ -142,10 +142,10 @@ class _BottomBarViewState extends State<BottomBarView>
                     child: Container(
                       // alignment: Alignment.center,s
                       decoration: BoxDecoration(
-                        color: FintnessAppTheme.nearlyDarkBlue,
+                        color: AppTheme.nearlyDarkBlue,
                         gradient: LinearGradient(
                             colors: [
-                              FintnessAppTheme.nearlyDarkBlue,
+                              AppTheme.nearlyDarkBlue,
                               HexColor('#6A88E5'),
                             ],
                             begin: Alignment.topLeft,
@@ -153,8 +153,7 @@ class _BottomBarViewState extends State<BottomBarView>
                         shape: BoxShape.circle,
                         boxShadow: <BoxShadow>[
                           BoxShadow(
-                              color: FintnessAppTheme.nearlyDarkBlue
-                                  .withOpacity(0.4),
+                              color: AppTheme.nearlyDarkBlue.withOpacity(0.4),
                               offset: const Offset(8.0, 16.0),
                               blurRadius: 16.0),
                         ],
@@ -170,7 +169,7 @@ class _BottomBarViewState extends State<BottomBarView>
                           },
                           child: Icon(
                             Icons.camera_alt,
-                            color: FintnessAppTheme.white,
+                            color: AppTheme.white,
                             size: 32,
                           ),
                         ),
@@ -274,7 +273,7 @@ class _TabIconsState extends State<TabIcons> with TickerProviderStateMixin {
                       width: 8,
                       height: 8,
                       decoration: BoxDecoration(
-                        color: FintnessAppTheme.nearlyDarkBlue,
+                        color: AppTheme.nearlyDarkBlue,
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -295,7 +294,7 @@ class _TabIconsState extends State<TabIcons> with TickerProviderStateMixin {
                       width: 4,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: FintnessAppTheme.nearlyDarkBlue,
+                        color: AppTheme.nearlyDarkBlue,
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -316,7 +315,7 @@ class _TabIconsState extends State<TabIcons> with TickerProviderStateMixin {
                       width: 6,
                       height: 6,
                       decoration: BoxDecoration(
-                        color: FintnessAppTheme.nearlyDarkBlue,
+                        color: AppTheme.nearlyDarkBlue,
                         shape: BoxShape.circle,
                       ),
                     ),

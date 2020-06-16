@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scanned/auth.dart';
-import '../fintness_app_theme.dart';
+import '../app_theme.dart';
 
 class MembersScreen extends StatefulWidget {
   const MembersScreen({Key key, this.animationController, this.gid})
@@ -37,6 +37,9 @@ class _MembersScreenState extends State<MembersScreen> {
                 scrollDirection: Axis.vertical,
                 itemBuilder: (context, index) {
                   return Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
                     child: ListTile(
                       title: Row(
                         children: <Widget>[
@@ -44,17 +47,17 @@ class _MembersScreenState extends State<MembersScreen> {
                             child: Text(
                               snapshot.data.documents[index].data['name'],
                               style: TextStyle(
-                                fontFamily: FintnessAppTheme.fontName,
+                                fontFamily: AppTheme.fontName,
                                 fontWeight: FontWeight.w700,
                                 letterSpacing: 1.2,
-                                color: FintnessAppTheme.darkerText,
+                                color: AppTheme.darkerText,
                               ),
                             ),
                           ),
                           Text(
                             snapshot.data.documents[index].data['status'],
                             style: TextStyle(
-                              fontFamily: FintnessAppTheme.fontName,
+                              fontFamily: AppTheme.fontName,
                               letterSpacing: 1.2,
                               color: Colors.black54,
                             ),

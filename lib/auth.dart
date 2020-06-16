@@ -142,6 +142,7 @@ class AuthService {
     DocumentSnapshot groupData;
     String gid;
     String eid;
+
     for (int i = 0; i < res.length; i++) {
       if (res[i] == '+') {
         gid = res.substring(0, i);
@@ -221,6 +222,24 @@ class AuthService {
     return exists;
   }
 
+  Future<DateTime> getNextEvent(String gid) async {
+    CollectionReference refEvents =
+        _db.collection('groups').document(gid).collection('events');
+    DateTime nextEvent = DateTime(9999);
+    DateTime eventTime;
+
+    await refEvents.getDocuments().then((res) {
+      res.documents.forEach((event) {
+        eventTime = event.data['startTime'].toDate();
+        if (eventTime.isBefore(nextEvent) &&
+            eventTime.isAfter(DateTime.now())) {
+          nextEvent = event.data['startTime'].toDate();
+        }
+      });
+    });
+    return nextEvent;
+  }
+
   void addEvent(String gid, String name, DateTime start, DateTime end) {
     CollectionReference ref =
         _db.collection('groups').document(gid).collection('events');
@@ -233,8 +252,8 @@ class AuthService {
 
     ref.add({
       'name': name,
-      'start time': start,
-      'end time': end,
+      'startTime': start,
+      'endTime': end,
       'gid': gid,
     }).then((value) {
       _eventID = value.documentID;
@@ -312,23 +331,6 @@ class AuthService {
         .collection('attendees')
         .snapshots();
     return qn;
-  }
-
-  Future scanQR() async {
-    try {
-      var QRresult = await BarcodeScanner.scan();
-      resultQR = QRresult.rawContent;
-    } on PlatformException catch (e) {
-      if (e.code == BarcodeScanner.cameraAccessDenied) {
-        resultQR = 'Camera Permission Denied';
-      } else {
-        resultQR = 'Something Went Wrong: $e';
-      }
-    } on FormatException catch (e) {
-      resultQR = 'You pressed the back button before scanning';
-    } catch (e) {
-      resultQR = 'Something Went Wrong: $e';
-    }
   }
 }
 

@@ -3,7 +3,8 @@ import 'package:scanned/groups/group_detail_view.dart';
 import 'package:scanned/groups/add_group_screen.dart';
 import 'package:flutter/material.dart';
 import '../auth.dart';
-import '../fintness_app_theme.dart';
+import '../app_theme.dart';
+import 'package:intl/intl.dart';
 
 class GroupScreen extends StatefulWidget {
   const GroupScreen({Key key, this.animationController}) : super(key: key);
@@ -55,7 +56,7 @@ class _GroupScreenState extends State<GroupScreen>
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: FintnessAppTheme.background,
+      color: AppTheme.background,
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: Stack(
@@ -92,11 +93,46 @@ class _GroupScreenState extends State<GroupScreen>
             scrollDirection: Axis.vertical,
             itemBuilder: (context, index) {
               return Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
                 child: InkWell(
                   onTap: () => navigateToGroupDetailsPage(
                       snapshot.data.documents[index]),
-                  child: ListTile(
-                      title: Text(snapshot.data.documents[index].data['name'])),
+                  child: Column(
+                    children: <Widget>[
+                      ListTile(
+                        title: Text(
+                          snapshot.data.documents[index].data['name'],
+                        ),
+                        subtitle: FutureBuilder(
+                            future: authService.getNextEvent(
+                                snapshot.data.documents[index].data['gid']),
+                            builder: (context, snapshot1) {
+                              if (!snapshot1.hasData) {
+                                return SizedBox();
+                              }
+                              if (snapshot1.data == DateTime(9999)) {
+                                return Row(children: <Widget>[
+                                  Expanded(
+                                    child: Text('Next Event: '),
+                                  ),
+                                  Text('No Upcoming Events'),
+                                ]);
+                              }
+                              return Row(children: <Widget>[
+                                Expanded(
+                                  child: Text('Next Event: '),
+                                ),
+                                Text(
+                                  DateFormat('EE, MMMM d, yyyy')
+                                      .format(snapshot1.data),
+                                ),
+                              ]);
+                            }),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },
@@ -119,14 +155,13 @@ class _GroupScreenState extends State<GroupScreen>
                     0.0, 30 * (1.0 - topBarAnimation.value), 0.0),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: FintnessAppTheme.white.withOpacity(topBarOpacity),
+                    color: AppTheme.white.withOpacity(topBarOpacity),
                     borderRadius: const BorderRadius.only(
                       bottomLeft: Radius.circular(32.0),
                     ),
                     boxShadow: <BoxShadow>[
                       BoxShadow(
-                          color: FintnessAppTheme.grey
-                              .withOpacity(0.4 * topBarOpacity),
+                          color: AppTheme.grey.withOpacity(0.4 * topBarOpacity),
                           offset: const Offset(1.1, 1.1),
                           blurRadius: 10.0),
                     ],
@@ -152,11 +187,11 @@ class _GroupScreenState extends State<GroupScreen>
                                   'Groups',
                                   textAlign: TextAlign.left,
                                   style: TextStyle(
-                                    fontFamily: FintnessAppTheme.fontName,
+                                    fontFamily: AppTheme.fontName,
                                     fontWeight: FontWeight.w700,
                                     fontSize: 22 + 6 - 6 * topBarOpacity,
                                     letterSpacing: 1.2,
-                                    color: FintnessAppTheme.darkerText,
+                                    color: AppTheme.darkerText,
                                   ),
                                 ),
                               ),
@@ -172,7 +207,7 @@ class _GroupScreenState extends State<GroupScreen>
                                 child: Center(
                                   child: Icon(
                                     Icons.add,
-                                    color: FintnessAppTheme.grey,
+                                    color: AppTheme.grey,
                                   ),
                                 ),
                               ),

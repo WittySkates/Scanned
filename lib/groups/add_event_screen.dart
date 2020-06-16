@@ -55,8 +55,11 @@ class _AddEventScreen extends State<AddEventScreen> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(0, 0, 0, 50),
                 child: SizedBox(
-                  height: 70,
+                  height: 80,
                   child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: TextFormField(
@@ -85,6 +88,9 @@ class _AddEventScreen extends State<AddEventScreen> {
                 ),
               ),
               Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
                 child: InkWell(
                   onTap: () {
                     DatePicker.showDateTimePicker(
@@ -118,6 +124,9 @@ class _AddEventScreen extends State<AddEventScreen> {
                 ),
               ),
               Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
                 child: InkWell(
                   onTap: () {
                     DatePicker.showDateTimePicker(
