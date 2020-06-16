@@ -34,9 +34,8 @@ class _FitnessAppHomeScreenState extends State<FitnessAppHomeScreen>
     return [
       GroupScreen(animationController: animationController),
       MyDiaryScreen(animationController: animationController),
-//      CameraScreen(),
       ProfileScreen(animationController: animationController),
-      MyDiaryScreen(animationController: animationController),
+      ProfileScreen(animationController: animationController),
     ];
   }
 

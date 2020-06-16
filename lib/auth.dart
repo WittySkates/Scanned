@@ -101,6 +101,8 @@ class AuthService {
         .collection('groupsJoined');
 
     CollectionReference refGroups = _db.collection('groups');
+    DocumentReference refCurUser =
+        _db.collection('users').document(currentUserUID);
 
     refGroups.add({
       'name': name,

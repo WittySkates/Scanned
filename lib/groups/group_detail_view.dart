@@ -22,16 +22,16 @@ class _GroupDetailPage extends State<GroupDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.post.data['status'] == 'owner' ||
-        widget.post.data['status'] == 'admin') {
-      return StreamBuilder(
-          stream: authService.getGroupCounts(widget.post.data['gid']),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return Center(
-                child: Container(color: FintnessAppTheme.background),
-              );
-            } else {
+    return StreamBuilder(
+        stream: authService.getGroupCounts(widget.post.data['gid']),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Center(
+              child: Container(color: FintnessAppTheme.background),
+            );
+          } else {
+            if (widget.post.data['status'] == 'owner' ||
+                widget.post.data['status'] == 'admin') {
               return Scaffold(
                 backgroundColor: FintnessAppTheme.background,
                 appBar: AppBar(
@@ -111,11 +111,11 @@ class _GroupDetailPage extends State<GroupDetailPage> {
                   ],
                 ),
               );
+            } else {
+              return Container();
             }
-          });
-    } else {
-      return Text('No Buddy');
-    }
+          }
+        });
   }
 
   navigateToMembersPage(String gid) {
