@@ -384,6 +384,70 @@ class AuthService {
     deleteMember(gid, currentUserUID);
   }
 
+  void demoteMember(String gid, String mid) async {
+    DocumentReference refMember = _db
+        .collection('groups')
+        .document(gid)
+        .collection('occupants')
+        .document(mid);
+
+    DocumentReference refUserGroup = _db
+        .collection('users')
+        .document(mid)
+        .collection('groupsJoined')
+        .document(gid);
+
+    await refMember.get().then((res) {
+      if (res.data['status'] == 'owner') {
+        refMember.setData({'status': 'admin'}, merge: true);
+      }
+      if (res.data['status'] == 'admin') {
+        refMember.setData({'status': 'member'}, merge: true);
+      }
+    });
+
+    await refUserGroup.get().then((resp) {
+      if (resp.data['status'] == 'owner') {
+        refUserGroup.setData({'status': 'admin'}, merge: true);
+      }
+      if (resp.data['status'] == 'admin') {
+        refUserGroup.setData({'status': 'member'}, merge: true);
+      }
+    });
+  }
+
+  void promoteMember(String gid, String mid) async {
+    DocumentReference refMember = _db
+        .collection('groups')
+        .document(gid)
+        .collection('occupants')
+        .document(mid);
+
+    DocumentReference refUserGroup = _db
+        .collection('users')
+        .document(mid)
+        .collection('groupsJoined')
+        .document(gid);
+
+    await refMember.get().then((res) {
+      if (res.data['status'] == 'member') {
+        refMember.setData({'status': 'admin'}, merge: true);
+      }
+      if (res.data['status'] == 'admin') {
+        refMember.setData({'status': 'owner'}, merge: true);
+      }
+    });
+
+    await refUserGroup.get().then((resp) {
+      if (resp.data['status'] == 'member') {
+        refUserGroup.setData({'status': 'admin'}, merge: true);
+      }
+      if (resp.data['status'] == 'admin') {
+        refUserGroup.setData({'status': 'owner'}, merge: true);
+      }
+    });
+  }
+
   void deleteMember(String gid, String mid) {
     DocumentReference refGroup = _db.collection('groups').document(gid);
     DocumentReference refUserGroup = _db
@@ -414,6 +478,17 @@ class AuthService {
   Stream<DocumentSnapshot> getGroupCounts(String gid) {
     Stream<DocumentSnapshot> qn;
     qn = _db.collection('groups').document(gid).snapshots();
+    return qn;
+  }
+
+  Stream<DocumentSnapshot> getUserData(String gid) {
+    Stream<DocumentSnapshot> qn;
+    qn = _db
+        .collection('groups')
+        .document(gid)
+        .collection('occupants')
+        .document(currentUserUID)
+        .snapshots();
     return qn;
   }
 

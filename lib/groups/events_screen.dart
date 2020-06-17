@@ -81,11 +81,12 @@ class _EventsScreen extends State<EventsScreen> {
                                     letterSpacing: 1.2,
                                     color: AppTheme.darkerText),
                               ),
-                              subtitle: Text(DateFormat('h:m a').format(snapshot
-                                      .data.documents[index].data['startTime']
-                                      .toDate()) +
+                              subtitle: Text(DateFormat('h:mm a').format(
+                                      snapshot.data.documents[index]
+                                          .data['startTime']
+                                          .toDate()) +
                                   ' - ' +
-                                  DateFormat('h:m a').format(snapshot
+                                  DateFormat('h:mm a').format(snapshot
                                       .data.documents[index].data['endTime']
                                       .toDate())),
                             ),
@@ -96,7 +97,7 @@ class _EventsScreen extends State<EventsScreen> {
                               color: Colors.grey[400],
                             ),
                             onPressed: () {
-                              _showDialog(widget.gid,
+                              _showDialogDelete(widget.gid,
                                   snapshot.data.documents[index].data['eid']);
                             },
                           )
@@ -143,7 +144,7 @@ class _EventsScreen extends State<EventsScreen> {
                 )));
   }
 
-  void _showDialog(String gid, String eid) {
+  void _showDialogDelete(String gid, String eid) {
     showDialog(
       context: context,
       builder: (BuildContext context) {

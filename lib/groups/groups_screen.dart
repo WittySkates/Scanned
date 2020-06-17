@@ -140,7 +140,7 @@ class _GroupScreenState extends State<GroupScreen>
                             color: Colors.grey[400],
                           ),
                           onPressed: () {
-                            _showDialog(
+                            _showDialogDelete(
                                 snapshot.data.documents[index].data['gid']);
                           },
                         )
@@ -196,7 +196,7 @@ class _GroupScreenState extends State<GroupScreen>
                             color: Colors.grey[400],
                           ),
                           onPressed: () {
-                            _showDialog1(
+                            _showDialogLeave(
                                 snapshot.data.documents[index].data['gid']);
                           },
                         )
@@ -310,7 +310,7 @@ class _GroupScreenState extends State<GroupScreen>
                 )));
   }
 
-  void _showDialog(String gid) {
+  void _showDialogDelete(String gid) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -339,7 +339,7 @@ class _GroupScreenState extends State<GroupScreen>
     );
   }
 
-  void _showDialog1(String gid) {
+  void _showDialogLeave(String gid) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
