@@ -147,15 +147,36 @@ class _FitnessAppHomeScreenState extends State<FitnessAppHomeScreen>
 
   Future scanQR() async {
     try {
-      var result = await BarcodeScanner.scan();
+      var scanData = await BarcodeScanner.scan();
+      String res = await authService.scannedQR(scanData.rawContent);
 
-      if (result.type.toString() == 'Cancelled') {
+      if (scanData.type.toString() == 'Cancelled') {
         setState(() {
           resultQR = 'cancelled';
         });
-      } else if (await authService.scannedQR(result.rawContent)) {
+      } else if (res == 'joinedGroup') {
         setState(() {
-          resultQR = 'You Joined Successfully or are Already Part of the Group';
+          resultQR = 'You Joined the Group Successfully';
+        });
+      } else if (res == 'signedEvent') {
+        setState(() {
+          resultQR = 'You Signed Into the Event Successfully';
+        });
+      } else if (res == 'alreadyJoinedGroup') {
+        setState(() {
+          resultQR = 'You Already Joined this Group';
+        });
+      } else if (res == 'alreadySignedEvent') {
+        setState(() {
+          resultQR = 'You Already Signed Into this Event';
+        });
+      } else if (res == 'joinedEvent') {
+        setState(() {
+          resultQR = 'You Joined the Group and Signed Into the Event';
+        });
+      } else if (res == 'notTime') {
+        setState(() {
+          resultQR = 'The Window to Sign In is Currently Closed';
         });
       } else {
         setState(() {

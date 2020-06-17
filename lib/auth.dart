@@ -138,7 +138,7 @@ class AuthService {
     return _documentID;
   }
 
-  Future<bool> scannedQR(String res) async {
+  Future<String> scannedQR(String res) async {
     DocumentSnapshot groupData;
     String gid;
     String eid;
@@ -171,55 +171,89 @@ class AuthService {
         .collection('groupsJoined')
         .document(gid);
 
-    bool exists = false;
+    String result = 'noQR';
 
-    await refNewMember.get().then((snapshot) {
-      if (!snapshot.exists) {
-        refGroup.setData({
-          'memberCount': FieldValue.increment(1),
-        }, merge: true);
-      }
-    });
-
-    await refGroup.get().then((snapshot) {
+    await refGroup.get().then((snapshot) async {
       if (snapshot.exists) {
-        refNewMember.setData({
-          'name': currentUserName,
-          'email': currentUserEmail,
-          'uid': currentUserUID,
-          'status': 'member',
-        }, merge: true);
+        await refNewMember.get().then((snapshot) {
+          if (!snapshot.exists) {
+            refGroup.setData({
+              'memberCount': FieldValue.increment(1),
+            }, merge: true);
+            refNewMember.setData({
+              'name': currentUserName,
+              'email': currentUserEmail,
+              'uid': currentUserUID,
+              'status': 'member',
+            }, merge: true);
 
-        refCurrentUserJoined.setData({
-          'name': groupData.data['name'],
-          'country': groupData.data['country'],
-          'state': groupData.data['state'],
-          'city': groupData.data['city'],
-          'gid': groupData.data['gid'],
-          'status': 'member',
-        }, merge: true);
+            refCurrentUserJoined.setData({
+              'name': groupData.data['name'],
+              'country': groupData.data['country'],
+              'state': groupData.data['state'],
+              'city': groupData.data['city'],
+              'gid': groupData.data['gid'],
+              'status': 'member',
+            }, merge: true);
 
-        exists = true;
-      } else {
-        exists = false;
+            result = 'joinedGroup';
+          } else {
+            result = 'alreadyJoinedGroup';
+          }
+        });
       }
     });
 
     if (eid != null) {
-      await refGroup.collection('events').document(eid).get().then((snapshot) {
+      await refGroup
+          .collection('events')
+          .document(eid)
+          .get()
+          .then((snapshot) async {
         if (snapshot.exists) {
-          refGroup
-              .collection('events')
-              .document(eid)
-              .collection('attendees')
-              .document(currentUserUID)
-              .setData({'name': currentUserName, 'attended': true},
-                  merge: true);
+          if (DateTime.now().isAfter(snapshot.data['startTime'].toDate()) &&
+              DateTime.now().isBefore(snapshot.data['endTime'].toDate())) {
+            await refGroup
+                .collection('events')
+                .document(eid)
+                .collection('attendees')
+                .document(currentUserUID)
+                .get()
+                .then((snapshot) {
+              if (snapshot.exists) {
+                if (snapshot.data['attended'] == false) {
+                  refGroup
+                      .collection('events')
+                      .document(eid)
+                      .collection('attendees')
+                      .document(currentUserUID)
+                      .setData({'name': currentUserName, 'attended': true},
+                          merge: true);
+                  result = 'signedEvent';
+                } else {
+                  result = 'alreadySignedEvent';
+                }
+              } else {
+                refGroup
+                    .collection('events')
+                    .document(eid)
+                    .collection('attendees')
+                    .document(currentUserUID)
+                    .setData({'name': currentUserName, 'attended': true},
+                        merge: true);
+                result = 'joinedEvent';
+              }
+            });
+          } else {
+            result = 'notTime';
+          }
+        } else {
+          result = 'noQR';
         }
       });
     }
 
-    return exists;
+    return result;
   }
 
   Future<DateTime> getNextEvent(String gid) async {
@@ -273,7 +307,7 @@ class AuthService {
           ref
               .document(_eventID)
               .collection('attendees')
-              .document(user.data['uid'])
+              .document(user.documentID)
               .setData({
             'name': user.data['name'],
             'attended': false,
@@ -284,15 +318,25 @@ class AuthService {
     refDoc.setData({'eventCount': FieldValue.increment(1)}, merge: true);
   }
 
-  void deleteEvent(String gid, String eid) {
+  void deleteEvent(String gid, String eid) async {
     DocumentReference refGroup = _db.collection('groups').document(gid);
-
+    CollectionReference refAtten = _db
+        .collection('groups')
+        .document(gid)
+        .collection('events')
+        .document(eid)
+        .collection('attendees');
     DocumentReference refEvent = _db
         .collection('groups')
         .document(gid)
         .collection('events')
         .document(eid);
 
+    await refAtten.getDocuments().then((res) {
+      res.documents.forEach((atten) {
+        refAtten.document(atten.documentID).delete();
+      });
+    });
     refEvent.delete();
     refGroup.setData({'eventCount': FieldValue.increment(-1)}, merge: true);
   }
@@ -301,7 +345,8 @@ class AuthService {
     DocumentReference refGroup = _db.collection('groups').document(gid);
     CollectionReference refMembers =
         _db.collection('groups').document(gid).collection('occupants');
-
+    CollectionReference refEvent =
+        _db.collection('groups').document(gid).collection('events');
     await refMembers.getDocuments().then((res) {
       res.documents.forEach((user) {
         _db
@@ -310,6 +355,26 @@ class AuthService {
             .collection('groupsJoined')
             .document(gid)
             .delete();
+
+        refMembers.document(user.data['uid']).delete();
+      });
+    });
+    await refEvent.getDocuments().then((res) {
+      res.documents.forEach((event) async {
+        await refEvent
+            .document(event.documentID)
+            .collection('attendees')
+            .getDocuments()
+            .then((res) {
+          res.documents.forEach((atten) {
+            refEvent
+                .document(event.documentID)
+                .collection('attendees')
+                .document(atten.documentID)
+                .delete();
+          });
+        });
+        refEvent.document(event.documentID).delete();
       });
     });
     refGroup.delete();
@@ -327,6 +392,18 @@ class AuthService {
         .collection('groupsJoined')
         .document(gid);
     DocumentReference refGroup = _db.collection('groups').document(gid);
+    CollectionReference refEvent =
+        _db.collection('groups').document(gid).collection('events');
+
+    await refEvent.getDocuments().then((res) {
+      res.documents.forEach((event) async {
+        await refEvent
+            .document(event.documentID)
+            .collection('attendees')
+            .document(currentUserUID)
+            .delete();
+      });
+    });
 
     refGroup.setData({'memberCount': FieldValue.increment(-1)}, merge: true);
 
