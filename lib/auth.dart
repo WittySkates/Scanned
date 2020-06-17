@@ -381,34 +381,7 @@ class AuthService {
   }
 
   void leaveGroup(String gid) async {
-    DocumentReference refGroupMembers = _db
-        .collection('groups')
-        .document(gid)
-        .collection('occupants')
-        .document(currentUserUID);
-    DocumentReference refUser = _db
-        .collection('users')
-        .document(currentUserUID)
-        .collection('groupsJoined')
-        .document(gid);
-    DocumentReference refGroup = _db.collection('groups').document(gid);
-    CollectionReference refEvent =
-        _db.collection('groups').document(gid).collection('events');
-
-    await refEvent.getDocuments().then((res) {
-      res.documents.forEach((event) async {
-        await refEvent
-            .document(event.documentID)
-            .collection('attendees')
-            .document(currentUserUID)
-            .delete();
-      });
-    });
-
-    refGroup.setData({'memberCount': FieldValue.increment(-1)}, merge: true);
-
-    refGroupMembers.delete();
-    refUser.delete();
+    deleteMember(gid, currentUserUID);
   }
 
   void deleteMember(String gid, String mid) {

@@ -346,7 +346,7 @@ class _GroupScreenState extends State<GroupScreen>
         return AlertDialog(
           contentPadding: EdgeInsets.fromLTRB(20, 30, 20, 0),
           content: Text(
-            'Are you sure you want to delete this group',
+            'Are you sure you want to leave this group',
             textAlign: TextAlign.center,
           ),
           actions: <Widget>[
