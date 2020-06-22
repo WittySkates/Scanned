@@ -541,7 +541,18 @@ class AuthService {
     return qn;
   }
 
-  Stream<QuerySnapshot> getGroupEvents(String gid) {
+  Stream<QuerySnapshot> getGroupEventsPast(String gid) {
+    Stream<QuerySnapshot> qn;
+    qn = _db
+        .collection('groups')
+        .document(gid)
+        .collection('events')
+        .orderBy('startTime', descending: true)
+        .snapshots();
+    return qn;
+  }
+
+  Stream<QuerySnapshot> getGroupEventsUpcoming(String gid) {
     Stream<QuerySnapshot> qn;
     qn = _db
         .collection('groups')

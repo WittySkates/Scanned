@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'auth.dart';
 import 'profile/profile_screen.dart';
 import 'app_theme.dart';
-import 'my_diary/my_diary_screen.dart';
 import 'groups/groups_screen.dart';
 import 'dart:developer';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
@@ -112,14 +111,17 @@ class _FitnessAppHomeScreenState extends State<FitnessAppHomeScreen>
                       customWidget: CustomNavBarWidget(
                         items: _navBarsItems(),
                         onItemSelected: (index) {
-                          animationController.reverse().then<dynamic>((data) {
-                            if (!mounted) {
-                              return;
-                            }
-                            setState(() {
-                              _controller.index = index;
-                            });
+                          setState(() {
+                            _controller.index = index;
                           });
+//                          animationController.reverse().then<dynamic>((data) {
+//                            if (!mounted) {
+//                              return;
+//                            }
+//                            setState(() {
+//                              _controller.index = index;
+//                            });
+//                          });
                         },
                         selectedIndex: _controller.index,
                         onButtonTap: () {

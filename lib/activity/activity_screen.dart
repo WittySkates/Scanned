@@ -1,9 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:scanned/groups/group_detail_view.dart';
-import 'package:scanned/groups/add_group_screen.dart';
 import 'package:flutter/material.dart';
 import '../auth.dart';
 import '../app_theme.dart';
+import 'package:intl/intl.dart';
 import 'package:intl/intl.dart';
 
 class ActivityScreen extends StatefulWidget {
@@ -105,6 +103,8 @@ class _ActivityScreen extends State<ActivityScreen>
                         letterSpacing: 1.2,
                         color: AppTheme.darkerText),
                   ),
+                  subtitle: Text(DateFormat('MMMM d, yyyy').format(
+                      snapshot.data.documents[index].data['date'].toDate())),
                 ),
               );
             },

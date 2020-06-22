@@ -124,91 +124,228 @@ class _GroupDetailPage extends State<GroupDetailPage> {
                   title: Text('Events'),
                   backgroundColor: Colors.indigoAccent,
                 ),
-                body: StreamBuilder(
-                    stream: authService.getGroupEvents(widget.post.data['gid']),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData) {
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      } else {
-                        return ListView.builder(
-                          padding: EdgeInsets.only(
-                            top: 16,
-                          ),
-                          itemCount: snapshot.data.documents.length,
-                          scrollDirection: Axis.vertical,
-                          itemBuilder: (context, index) {
-                            return Card(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              child: Row(
-                                children: <Widget>[
-                                  Container(
-                                    child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          15, 20, 15, 20),
-                                      child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: <Widget>[
-                                            Text(
-                                              DateFormat('MMM').format(snapshot
-                                                  .data
-                                                  .documents[index]
-                                                  .data['startTime']
-                                                  .toDate()),
-                                              style: TextStyle(fontSize: 20),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      0, 2, 0, 0),
-                                              child: Text(
-                                                DateFormat('d').format(snapshot
-                                                    .data
-                                                    .documents[index]
-                                                    .data['startTime']
-                                                    .toDate()),
-                                                style: TextStyle(fontSize: 20),
-                                              ),
-                                            ),
-                                          ]),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: ListTile(
-                                      title: Text(
-                                        snapshot
-                                            .data.documents[index].data['name'],
-                                        style: TextStyle(
-                                            fontFamily: AppTheme.fontName,
-                                            fontWeight: FontWeight.w700,
-                                            letterSpacing: 1.2,
-                                            color: AppTheme.darkerText),
+                body: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 20, 0, 10),
+                        child: Text(
+                          'Upcoming Events',
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontFamily: AppTheme.fontName,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 1.2,
+                              color: AppTheme.darkerText),
+                        ),
+                      ),
+                      StreamBuilder(
+                          stream: authService
+                              .getGroupEventsUpcoming(widget.post.data['gid']),
+                          builder: (context, snapshot) {
+                            return Expanded(
+                              child: ListView.builder(
+                                padding: EdgeInsets.only(
+                                  bottom: 15,
+                                  top: 5,
+                                ),
+                                itemCount: snapshot.data.documents.length,
+                                scrollDirection: Axis.vertical,
+                                itemBuilder: (context, index) {
+                                  if (DateTime.now().isBefore(snapshot
+                                      .data.documents[index].data['endTime']
+                                      .toDate())) {
+                                    return Card(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
                                       ),
-                                      subtitle: Text(DateFormat('h:mm a')
-                                              .format(snapshot
-                                                  .data
-                                                  .documents[index]
-                                                  .data['startTime']
-                                                  .toDate()) +
-                                          ' - ' +
-                                          DateFormat('h:mm a').format(snapshot
-                                              .data
-                                              .documents[index]
-                                              .data['endTime']
-                                              .toDate())),
-                                    ),
-                                  ),
-                                ],
+                                      child: Row(
+                                        children: <Widget>[
+                                          Container(
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(15),
+                                              child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  children: <Widget>[
+                                                    Text(
+                                                      DateFormat('MMM').format(
+                                                          snapshot
+                                                              .data
+                                                              .documents[index]
+                                                              .data['startTime']
+                                                              .toDate()),
+                                                      style: TextStyle(
+                                                          fontSize: 20),
+                                                    ),
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                          .fromLTRB(0, 2, 0, 0),
+                                                      child: Text(
+                                                        DateFormat('d').format(
+                                                            snapshot
+                                                                .data
+                                                                .documents[
+                                                                    index]
+                                                                .data[
+                                                                    'startTime']
+                                                                .toDate()),
+                                                        style: TextStyle(
+                                                            fontSize: 20),
+                                                      ),
+                                                    ),
+                                                  ]),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: ListTile(
+                                              title: Text(
+                                                snapshot.data.documents[index]
+                                                    .data['name'],
+                                                style: TextStyle(
+                                                    fontFamily:
+                                                        AppTheme.fontName,
+                                                    fontWeight: FontWeight.w700,
+                                                    letterSpacing: 1.2,
+                                                    color: AppTheme.darkerText),
+                                              ),
+                                              subtitle: Text(
+                                                  DateFormat('h:mm a').format(
+                                                          snapshot
+                                                              .data
+                                                              .documents[index]
+                                                              .data['startTime']
+                                                              .toDate()) +
+                                                      ' - ' +
+                                                      DateFormat('h:mm a')
+                                                          .format(snapshot
+                                                              .data
+                                                              .documents[index]
+                                                              .data['endTime']
+                                                              .toDate())),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  } else {
+                                    return Container();
+                                  }
+                                },
                               ),
                             );
-                          },
-                        );
-                      }
-                    }),
+                          }),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 20, 0, 10),
+                        child: Text(
+                          'Past Events',
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontFamily: AppTheme.fontName,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 1.2,
+                              color: AppTheme.darkerText),
+                        ),
+                      ),
+                      StreamBuilder(
+                          stream: authService
+                              .getGroupEventsPast(widget.post.data['gid']),
+                          builder: (context, snapshot) {
+                            return Expanded(
+                              child: ListView.builder(
+                                padding: EdgeInsets.only(
+                                  bottom: 15,
+                                  top: 5,
+                                ),
+                                itemCount: snapshot.data.documents.length,
+                                scrollDirection: Axis.vertical,
+                                itemBuilder: (context, index) {
+                                  if (DateTime.now().isAfter(snapshot
+                                      .data.documents[index].data['endTime']
+                                      .toDate())) {
+                                    return Card(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                      ),
+                                      child: Row(
+                                        children: <Widget>[
+                                          Container(
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(15),
+                                              child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  children: <Widget>[
+                                                    Text(
+                                                      DateFormat('MMM').format(
+                                                          snapshot
+                                                              .data
+                                                              .documents[index]
+                                                              .data['startTime']
+                                                              .toDate()),
+                                                      style: TextStyle(
+                                                          fontSize: 20),
+                                                    ),
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                          .fromLTRB(0, 2, 0, 0),
+                                                      child: Text(
+                                                        DateFormat('d').format(
+                                                            snapshot
+                                                                .data
+                                                                .documents[
+                                                                    index]
+                                                                .data[
+                                                                    'startTime']
+                                                                .toDate()),
+                                                        style: TextStyle(
+                                                            fontSize: 20),
+                                                      ),
+                                                    ),
+                                                  ]),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: ListTile(
+                                              title: Text(
+                                                snapshot.data.documents[index]
+                                                    .data['name'],
+                                                style: TextStyle(
+                                                    fontFamily:
+                                                        AppTheme.fontName,
+                                                    fontWeight: FontWeight.w700,
+                                                    letterSpacing: 1.2,
+                                                    color: AppTheme.darkerText),
+                                              ),
+                                              subtitle: Text(
+                                                  DateFormat('h:mm a').format(
+                                                          snapshot
+                                                              .data
+                                                              .documents[index]
+                                                              .data['startTime']
+                                                              .toDate()) +
+                                                      ' - ' +
+                                                      DateFormat('h:mm a')
+                                                          .format(snapshot
+                                                              .data
+                                                              .documents[index]
+                                                              .data['endTime']
+                                                              .toDate())),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  } else {
+                                    return Container();
+                                  }
+                                },
+                              ),
+                            );
+                          })
+                    ]),
               );
             }
           }
