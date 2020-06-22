@@ -189,3 +189,63 @@
 //),
 //),
 //),
+//
+
+//Activity Screen
+//import 'package:flutter/material.dart';
+//import '../app_theme.dart';
+//import '../auth.dart';
+//
+//class ActivityScreen extends StatefulWidget {
+//  const ActivityScreen({Key key, this.animationController}) : super(key: key);
+//  final AnimationController animationController;
+//  @override
+//  _ActivityScreen createState() => _ActivityScreen();
+//}
+//
+//class _ActivityScreen extends State<ActivityScreen> {
+//  @override
+//  Widget build(BuildContext context) {
+//    return Scaffold(
+//      backgroundColor: AppTheme.background,
+//      appBar: AppBar(
+//        title: Text('Activity'),
+//        backgroundColor: Colors.indigoAccent,
+//      ),
+//      body: StreamBuilder(
+//          stream: authService.getUserActivity(),
+//          builder: (context, snapshot) {
+//            if (!snapshot.hasData) {
+//              return Center(
+//                child: CircularProgressIndicator(),
+//              );
+//            } else {
+//              return ListView.builder(
+//                padding: EdgeInsets.only(
+//                  top: 16,
+//                ),
+//                itemCount: snapshot.data.documents.length,
+//                scrollDirection: Axis.vertical,
+//                itemBuilder: (context, index) {
+//                  return Card(
+//                    shape: RoundedRectangleBorder(
+//                      borderRadius: BorderRadius.circular(10.0),
+//                    ),
+//                    child: ListTile(
+//                      title: Text(
+//                        snapshot.data.documents[index].data['message'],
+//                        style: TextStyle(
+//                            fontFamily: AppTheme.fontName,
+//                            fontWeight: FontWeight.w700,
+//                            letterSpacing: 1.2,
+//                            color: AppTheme.darkerText),
+//                      ),
+//                    ),
+//                  );
+//                },
+//              );
+//            }
+//          }),
+//    );
+//  }
+//}

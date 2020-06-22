@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../auth.dart';
+import '../app_theme.dart';
 
 class AddGroupScreen extends StatefulWidget {
   @override
@@ -16,6 +17,7 @@ class _AddGroupScreen extends State<AddGroupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.background,
       appBar: AppBar(
         title: Text('Create Your Group'),
         backgroundColor: Colors.indigoAccent,

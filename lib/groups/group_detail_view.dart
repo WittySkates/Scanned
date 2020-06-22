@@ -54,6 +54,9 @@ class _GroupDetailPage extends State<GroupDetailPage> {
                     Flexible(
                       flex: 1,
                       child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
                         child: InkWell(
                             onTap: () =>
                                 navigateToMembersPage(widget.post.data['gid']),

@@ -106,6 +106,12 @@ class _GroupScreenState extends State<GroupScreen>
                           child: ListTile(
                             title: Text(
                               snapshot.data.documents[index].data['name'],
+                              style: TextStyle(
+                                fontFamily: AppTheme.fontName,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 1.2,
+                                color: AppTheme.darkerText,
+                              ),
                             ),
                             subtitle: FutureBuilder(
                                 future: authService.getNextEvent(

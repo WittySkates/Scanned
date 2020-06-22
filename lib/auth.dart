@@ -95,6 +95,9 @@ class AuthService {
 
     String _documentID;
 
+    CollectionReference refUserActivity =
+        _db.collection('users').document(currentUserUID).collection('activity');
+
     CollectionReference refUserGroupsJoined = _db
         .collection('users')
         .document(currentUser.uid)
@@ -135,6 +138,10 @@ class AuthService {
         'status': 'owner',
       }, merge: true);
     });
+
+    refUserActivity.add(
+        {'message': 'You created the group $name', 'date': DateTime.now()});
+
     return _documentID;
   }
 
@@ -157,6 +164,9 @@ class AuthService {
       groupData = value;
     });
 
+    CollectionReference refUserActivity =
+        _db.collection('users').document(currentUserUID).collection('activity');
+
     DocumentReference refGroup = _db.collection('groups').document(gid);
 
     DocumentReference refNewMember = _db
@@ -173,10 +183,10 @@ class AuthService {
 
     String result = 'noQR';
 
-    await refGroup.get().then((snapshot) async {
-      if (snapshot.exists) {
-        await refNewMember.get().then((snapshot) {
-          if (!snapshot.exists) {
+    await refGroup.get().then((group) async {
+      if (group.exists) {
+        await refNewMember.get().then((user) {
+          if (!user.exists) {
             refGroup.setData({
               'memberCount': FieldValue.increment(1),
             }, merge: true);
@@ -196,6 +206,10 @@ class AuthService {
               'status': 'member',
             }, merge: true);
 
+            refUserActivity.add({
+              'message': 'You joined the group ${group.data['name']}',
+              'date': DateTime.now()
+            });
             result = 'joinedGroup';
           } else {
             result = 'alreadyJoinedGroup';
@@ -209,19 +223,19 @@ class AuthService {
           .collection('events')
           .document(eid)
           .get()
-          .then((snapshot) async {
-        if (snapshot.exists) {
-          if (DateTime.now().isAfter(snapshot.data['startTime'].toDate()) &&
-              DateTime.now().isBefore(snapshot.data['endTime'].toDate())) {
+          .then((event) async {
+        if (event.exists) {
+          if (DateTime.now().isAfter(event.data['startTime'].toDate()) &&
+              DateTime.now().isBefore(event.data['endTime'].toDate())) {
             await refGroup
                 .collection('events')
                 .document(eid)
                 .collection('attendees')
                 .document(currentUserUID)
                 .get()
-                .then((snapshot) {
-              if (snapshot.exists) {
-                if (snapshot.data['attended'] == false) {
+                .then((attendant) {
+              if (attendant.exists) {
+                if (attendant.data['attended'] == false) {
                   refGroup
                       .collection('events')
                       .document(eid)
@@ -229,6 +243,11 @@ class AuthService {
                       .document(currentUserUID)
                       .setData({'name': currentUserName, 'attended': true},
                           merge: true);
+                  refUserActivity.add({
+                    'message':
+                        'You signed into the event ${event.data['name']}',
+                    'date': DateTime.now()
+                  });
                   result = 'signedEvent';
                 } else {
                   result = 'alreadySignedEvent';
@@ -241,6 +260,10 @@ class AuthService {
                     .document(currentUserUID)
                     .setData({'name': currentUserName, 'attended': true},
                         merge: true);
+                refUserActivity.add({
+                  'message': 'You signed into the event ${event.data['name']}',
+                  'date': DateTime.now()
+                });
                 result = 'joinedEvent';
               }
             });
@@ -281,6 +304,9 @@ class AuthService {
   }
 
   void addEvent(String gid, String name, DateTime start, DateTime end) {
+    CollectionReference refUserActivity =
+        _db.collection('users').document(currentUserUID).collection('activity');
+
     CollectionReference ref =
         _db.collection('groups').document(gid).collection('events');
 
@@ -316,6 +342,8 @@ class AuthService {
       });
     });
     refDoc.setData({'eventCount': FieldValue.increment(1)}, merge: true);
+    refUserActivity.add(
+        {'message': 'You created the event $name', 'date': DateTime.now()});
   }
 
   void deleteEvent(String gid, String eid) async {
@@ -492,6 +520,17 @@ class AuthService {
     return qn;
   }
 
+  Stream<QuerySnapshot> getUserActivity() {
+    Stream<QuerySnapshot> qn;
+    qn = _db
+        .collection('users')
+        .document(currentUserUID)
+        .collection('activity')
+        .orderBy('date', descending: true)
+        .snapshots();
+    return qn;
+  }
+
   Stream<QuerySnapshot> getGroupMembers(String gid) {
     Stream<QuerySnapshot> qn;
     qn = _db
@@ -504,8 +543,12 @@ class AuthService {
 
   Stream<QuerySnapshot> getGroupEvents(String gid) {
     Stream<QuerySnapshot> qn;
-    qn =
-        _db.collection('groups').document(gid).collection('events').snapshots();
+    qn = _db
+        .collection('groups')
+        .document(gid)
+        .collection('events')
+        .orderBy('startTime', descending: false)
+        .snapshots();
     return qn;
   }
 

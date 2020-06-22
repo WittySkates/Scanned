@@ -17,6 +17,7 @@ class _MembersScreenState extends State<MembersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.background,
       appBar: AppBar(
         title: Text('Members'),
         backgroundColor: Colors.indigoAccent,
@@ -69,7 +70,7 @@ class _MembersScreenState extends State<MembersScreen> {
                                         style: TextStyle(
                                           fontFamily: AppTheme.fontName,
                                           letterSpacing: 1.2,
-                                          color: Colors.black54,
+                                          color: AppTheme.lightText,
                                         ),
                                       ),
                                     ),
@@ -141,7 +142,7 @@ class _MembersScreenState extends State<MembersScreen> {
                                         style: TextStyle(
                                           fontFamily: AppTheme.fontName,
                                           letterSpacing: 1.2,
-                                          color: Colors.black54,
+                                          color: AppTheme.lightText,
                                         ),
                                       ),
                                     ),
@@ -180,7 +181,7 @@ class _MembersScreenState extends State<MembersScreen> {
                                         style: TextStyle(
                                           fontFamily: AppTheme.fontName,
                                           letterSpacing: 1.2,
-                                          color: Colors.black54,
+                                          color: AppTheme.lightText,
                                         ),
                                       ),
                                     ),
@@ -228,7 +229,7 @@ class _MembersScreenState extends State<MembersScreen> {
                                         style: TextStyle(
                                           fontFamily: AppTheme.fontName,
                                           letterSpacing: 1.2,
-                                          color: Colors.black54,
+                                          color: AppTheme.lightText,
                                         ),
                                       ),
                                     ),

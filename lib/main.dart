@@ -9,6 +9,7 @@ import 'dart:developer';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'bottom_navigation_view/bottom_bar.dart';
+import 'activity/activity_screen.dart';
 
 void main() {
   runApp(new MaterialApp(home: FitnessAppHomeScreen()));
@@ -33,8 +34,8 @@ class _FitnessAppHomeScreenState extends State<FitnessAppHomeScreen>
   List<Widget> _buildScreens() {
     return [
       GroupScreen(animationController: animationController),
-      MyDiaryScreen(animationController: animationController),
-      ProfileScreen(animationController: animationController),
+      ActivityScreen(animationController: animationController),
+      ActivityScreen(animationController: animationController),
       ProfileScreen(animationController: animationController),
     ];
   }

@@ -19,6 +19,7 @@ class _EventsScreen extends State<EventsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.background,
       appBar: getAppBarUI(),
       body: StreamBuilder(
           stream: authService.getGroupEvents(widget.gid),

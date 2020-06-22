@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
 import '../auth.dart';
+import '../app_theme.dart';
 
 class AddEventScreen extends StatefulWidget {
   AddEventScreen({this.gid});
@@ -41,6 +42,7 @@ class _AddEventScreen extends State<AddEventScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.background,
       appBar: AppBar(
         title: Text('Create Your Event'),
         backgroundColor: Colors.indigoAccent,
