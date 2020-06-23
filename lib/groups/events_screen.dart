@@ -1,10 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:scanned/groups/event_details_screen.dart';
 import 'package:scanned/groups/add_event_screen.dart';
 import 'package:intl/intl.dart';
 import '../app_theme.dart';
-
 import '../auth.dart';
 
 class EventsScreen extends StatefulWidget {
@@ -39,7 +37,11 @@ class _EventsScreen extends State<EventsScreen> {
         StreamBuilder(
             stream: authService.getGroupEventsUpcoming(widget.gid),
             builder: (context, snapshot) {
-              return Expanded(
+              if (!snapshot.hasData) {
+                return Container();
+              }
+              return Flexible(
+                flex: 3,
                 child: ListView.builder(
                   padding: EdgeInsets.only(
                     bottom: 15,
@@ -63,7 +65,7 @@ class _EventsScreen extends State<EventsScreen> {
                             children: <Widget>[
                               Container(
                                 child: Padding(
-                                  padding: const EdgeInsets.all(15),
+                                  padding: const EdgeInsets.only(left: 20),
                                   child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
@@ -135,7 +137,7 @@ class _EventsScreen extends State<EventsScreen> {
               );
             }),
         Padding(
-          padding: const EdgeInsets.fromLTRB(10, 20, 0, 10),
+          padding: const EdgeInsets.fromLTRB(10, 0, 0, 10),
           child: Text(
             'Past Events',
             style: TextStyle(
@@ -149,10 +151,14 @@ class _EventsScreen extends State<EventsScreen> {
         StreamBuilder(
             stream: authService.getGroupEventsPast(widget.gid),
             builder: (context, snapshot) {
-              return Expanded(
+              if (!snapshot.hasData) {
+                return Container();
+              }
+              return Flexible(
+                flex: 2,
                 child: ListView.builder(
                   padding: EdgeInsets.only(
-                    bottom: 15,
+                    bottom: 30,
                     top: 5,
                   ),
                   itemCount: snapshot.data.documents.length,
@@ -162,6 +168,7 @@ class _EventsScreen extends State<EventsScreen> {
                         .data.documents[index].data['endTime']
                         .toDate())) {
                       return Card(
+                        color: Colors.grey,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
@@ -173,7 +180,7 @@ class _EventsScreen extends State<EventsScreen> {
                             children: <Widget>[
                               Container(
                                 child: Padding(
-                                  padding: const EdgeInsets.all(15),
+                                  padding: const EdgeInsets.only(left: 20),
                                   child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
@@ -224,7 +231,7 @@ class _EventsScreen extends State<EventsScreen> {
                               IconButton(
                                 icon: Icon(
                                   Icons.delete,
-                                  color: Colors.grey[400],
+                                  color: AppTheme.darkerText,
                                 ),
                                 onPressed: () {
                                   _showDialogDelete(
@@ -243,7 +250,7 @@ class _EventsScreen extends State<EventsScreen> {
                   },
                 ),
               );
-            })
+            }),
       ]),
     );
   }

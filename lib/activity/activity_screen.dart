@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../auth.dart';
 import '../app_theme.dart';
 import 'package:intl/intl.dart';
-import 'package:intl/intl.dart';
 
 class ActivityScreen extends StatefulWidget {
   const ActivityScreen({Key key, this.animationController}) : super(key: key);

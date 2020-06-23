@@ -547,7 +547,7 @@ class AuthService {
         .collection('groups')
         .document(gid)
         .collection('events')
-        .orderBy('startTime', descending: true)
+        .orderBy('endTime', descending: true)
         .snapshots();
     return qn;
   }

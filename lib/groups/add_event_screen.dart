@@ -106,6 +106,11 @@ class _AddEventScreen extends State<AddEventScreen> {
                           startTimeDateShown =
                               DateFormat('EE, MMMM d, yyyy').format(date);
                           startTimeShown = DateFormat('h:mm a').format(date);
+
+                          endTime = date.add(Duration(minutes: 1));
+                          endTimeDateShown =
+                              DateFormat('EE, MMMM d, yyyy').format(endTime);
+                          endTimeShown = DateFormat('h:mm a').format(endTime);
                         });
                       },
                       onConfirm: (date) {
