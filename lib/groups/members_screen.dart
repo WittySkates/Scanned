@@ -33,6 +33,11 @@ class _MembersScreenState extends State<MembersScreen> {
               return StreamBuilder(
                   stream: authService.getUserData(widget.gid),
                   builder: (context, snapshot1) {
+                    if (!snapshot1.hasData) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
                     return ListView.builder(
                       padding: EdgeInsets.only(
                         top: 16,

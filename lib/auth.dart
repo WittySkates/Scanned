@@ -279,6 +279,26 @@ class AuthService {
     return result;
   }
 
+  Future<DocumentSnapshot> getNextEventDocument(String gid) async {
+    CollectionReference refEvents =
+        _db.collection('groups').document(gid).collection('events');
+    DocumentSnapshot doc;
+    DateTime nextEvent = DateTime(9999);
+    DateTime eventTime;
+
+    await refEvents.getDocuments().then((res) {
+      res.documents.forEach((event) {
+        eventTime = event.data['startTime'].toDate();
+        if (eventTime.isBefore(nextEvent) &&
+            eventTime.isAfter(DateTime.now())) {
+          nextEvent = event.data['startTime'].toDate();
+          doc = event;
+        }
+      });
+    });
+    return doc;
+  }
+
   Future<DateTime> getNextEvent(String gid) async {
     CollectionReference refEvents =
         _db.collection('groups').document(gid).collection('events');
